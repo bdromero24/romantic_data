@@ -283,6 +283,21 @@ ROMANTIC_CONVERSATION_STARTER_QUERY: TextClause = text(
     """
 )
 
+ROMANTIC_AVERAGE_DAILY_MESSAGES_QUERY: TextClause = text(
+    f"""
+    WITH daily_messages AS (
+        SELECT DATE(timestamp) AS conversation_day,
+               COUNT(*) AS total_messages
+        FROM messages
+        WHERE {VALID_MESSAGE_FILTER}
+          AND timestamp IS NOT NULL
+        GROUP BY conversation_day
+    )
+    SELECT COALESCE(AVG(total_messages)::numeric, 0) AS avg_daily_messages
+    FROM daily_messages
+    """
+)
+
 ROMANTIC_HOURLY_RHYTHM_QUERY: TextClause = text(
     f"""
     SELECT EXTRACT(HOUR FROM timestamp)::INTEGER AS label,

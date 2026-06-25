@@ -58,6 +58,25 @@ def test_fetch_sender_rhythm_passes_cutoff_parameter(monkeypatch) -> None:
     assert calls == [{"max_date": "2026-05-31"}]
 
 
+def test_fetch_average_daily_messages_returns_float(monkeypatch) -> None:
+    calls: list[str] = []
+
+    def fake_fetch_one_dict(_query, function_name):
+        calls.append(function_name)
+        return {"avg_daily_messages": "42.5"}
+
+    monkeypatch.setattr(
+        romantic_queries,
+        "_fetch_one_dict",
+        fake_fetch_one_dict,
+    )
+
+    result = romantic_queries.fetch_average_daily_messages()
+
+    assert result == 42.5
+    assert calls == ["fetch_average_daily_messages"]
+
+
 def test_count_hater_word_occurrences_passes_sender_and_pattern(monkeypatch) -> None:
     calls: list[dict[str, str]] = []
 
@@ -90,3 +109,13 @@ def test_hater_word_query_counts_occurrences_from_normalized_message() -> None:
     assert "sender = :sender_name" in query_text
     assert "message_normalized" in query_text
     assert "message ~" not in query_text
+
+
+def test_average_daily_messages_query_groups_valid_messages_by_day() -> None:
+    query_text = str(romantic_queries.ROMANTIC_AVERAGE_DAILY_MESSAGES_QUERY)
+
+    assert "WITH daily_messages AS" in query_text
+    assert "DATE(timestamp) AS conversation_day" in query_text
+    assert "COUNT(*) AS total_messages" in query_text
+    assert "AVG(total_messages)::numeric" in query_text
+    assert "timestamp IS NOT NULL" in query_text

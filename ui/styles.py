@@ -195,7 +195,9 @@ div {
 
 .bento-grid {
   display: grid;
+  grid-auto-flow: dense;
   grid-template-columns: repeat(12, 1fr);
+  align-items: stretch;
   gap: 1rem;
   margin: 1.5rem 0;
 }
@@ -251,6 +253,39 @@ div {
   grid-column: span 4;
   min-height: 12rem;
   padding: 1.4rem;
+}
+
+.first-te-amo-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.bento-card.first-te-amo-card,
+.timeline-card.first-te-amo-card {
+  padding-right: clamp(1.4rem, 10vw, 6rem);
+}
+
+.first-te-amo-card > :not(.first-te-amo-heart) {
+  position: relative;
+  z-index: 1;
+}
+
+.first-te-amo-heart {
+  position: absolute;
+  top: 0.9rem;
+  right: 0.9rem;
+  z-index: 0;
+  width: clamp(42px, 6vw, 72px);
+  height: auto;
+  object-fit: contain;
+  image-rendering: pixelated;
+  background: transparent;
+  mix-blend-mode: multiply;
+  opacity: 0.92;
+  filter:
+    drop-shadow(0 10px 18px rgba(212, 20, 114, 0.22))
+    drop-shadow(0 0 12px rgba(255, 95, 183, 0.24));
+  pointer-events: none;
 }
 
 .bento-card.large {
@@ -321,11 +356,76 @@ div {
   padding: 1.3rem;
 }
 
+.scroll-quote-card {
+  position: relative;
+  min-height: 12rem;
+  padding: 2.4rem 1.8rem;
+  overflow: hidden;
+  background-image:
+    linear-gradient(135deg, rgba(255, 246, 251, 0.76), rgba(255, 240, 248, 0.64)),
+    var(--scroll-bg-image, linear-gradient(135deg, rgba(255, 246, 251, 0.96), rgba(255, 226, 242, 0.88))),
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.94), transparent 42%),
+    radial-gradient(circle at bottom right, rgba(255, 179, 217, 0.34), transparent 44%),
+    linear-gradient(135deg, rgba(255, 246, 251, 0.96), rgba(255, 226, 242, 0.88));
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  border: 1px solid rgba(255, 95, 183, 0.38);
+  border-radius: 26px 18px 26px 18px;
+  box-shadow:
+    0 18px 38px rgba(212, 20, 114, 0.14),
+    0 0 0 1px rgba(255, 255, 255, 0.48),
+    inset 0 0 28px rgba(255, 255, 255, 0.56);
+}
+
+.scroll-quote-card::before,
+.scroll-quote-card::after {
+  content: "";
+  position: absolute;
+  left: 1.1rem;
+  right: 1.1rem;
+  height: 0.72rem;
+  border: 1px solid rgba(255, 95, 183, 0.18);
+  border-radius: 999px;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.56), rgba(255, 95, 183, 0.20)),
+    linear-gradient(180deg, rgba(255, 246, 251, 0.92), rgba(255, 179, 217, 0.32));
+  box-shadow:
+    0 4px 12px rgba(212, 20, 114, 0.10),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72);
+  pointer-events: none;
+}
+
+.scroll-quote-card::before {
+  top: 0.65rem;
+}
+
+.scroll-quote-card::after {
+  bottom: 0.65rem;
+}
+
+.scroll-quote-card .quote-text,
+.scroll-quote-card .quote-sender,
+.scroll-quote-card .quote-date {
+  position: relative;
+  z-index: 1;
+}
+
 .quote-text {
   color: var(--text-main);
   font-size: 1.02rem;
   font-weight: 650;
   line-height: 1.55;
+  text-shadow:
+    0 0 8px rgba(255, 95, 183, 0.12),
+    0 2px 12px rgba(63, 36, 53, 0.06);
+}
+
+.scroll-quote-card .quote-sender {
+  color: var(--fuchsia-strong);
+  text-shadow:
+    0 0 10px rgba(212, 20, 114, 0.22),
+    0 0 18px rgba(255, 95, 183, 0.16);
 }
 
 .word-cloud {
@@ -600,6 +700,20 @@ button[kind="primary"]:hover,
   margin-top: 1.1rem;
 }
 
+.special-message-block-title {
+  color: var(--fuchsia-strong);
+  font-family: var(--font-script);
+  font-size: calc(clamp(1.8rem, 4vw, 2.7rem) - 2px);
+  font-style: italic;
+  font-weight: 800 !important;
+  line-height: 1.05;
+  margin-bottom: 0.8rem;
+  text-shadow:
+    0 0 10px rgba(212, 20, 114, 0.34),
+    0 0 24px rgba(255, 95, 183, 0.24),
+    0 4px 18px rgba(63, 36, 53, 0.10);
+}
+
 .ig-bubble {
   max-width: min(78%, 620px);
   padding: 0.9rem 1rem;
@@ -684,6 +798,22 @@ button[kind="primary"]:hover,
   .bento-card.large,
   .bento-card.full {
     grid-column: 1 / -1;
+  }
+
+  .bento-card.first-te-amo-card,
+  .timeline-card.first-te-amo-card {
+    padding-right: 1.4rem;
+  }
+
+  .first-te-amo-heart {
+    top: 0.75rem;
+    right: 0.75rem;
+    width: 44px;
+    opacity: 0.82;
+  }
+
+  .scroll-quote-card {
+    padding: 2.2rem 1.35rem;
   }
 
   .ig-bubble {

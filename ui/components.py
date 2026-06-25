@@ -17,6 +17,8 @@ from logger.logger import log_critical_error
 
 ASSETS_DIR = Path(__file__).parent / "assets"
 STRAWBERRY_IMAGE = ASSETS_DIR / "strawberry_8bit.png"
+PARCHMENT_IMAGE = ASSETS_DIR / "perrgamino.png"
+HEART_IMAGE = ASSETS_DIR / "corazon.png"
 STRAWBERRY_IMAGE_MIME_TYPE = "image/png"
 
 REVEAL_OBSERVER_HTML = """
@@ -148,14 +150,22 @@ def render_metric_cards(cards: list[dict[str, str]]) -> None:
 def build_metric_cards_html(cards: list[dict[str, str]]) -> str:
     """Build summary metric card HTML."""
     html_cards = []
+    heart_data_uri = _build_optional_image_data_uri(HEART_IMAGE)
     for index, card in enumerate(cards):
         size_class = _card_size_class(card.get("size", "small"))
-        label = _escape_value(card.get("label", ""))
+        raw_label = card.get("label", "")
+        label = _escape_value(raw_label)
         value = _escape_value(card.get("value", "0"))
         description = _escape_value(card.get("description", ""))
+        first_te_amo_class = _first_te_amo_card_class(raw_label)
+        heart_html = _build_first_te_amo_heart_html(
+            heart_data_uri,
+            raw_label,
+        )
         html_cards.append(
             f"""
-            <article class="bento-card {size_class} reveal-on-scroll" {_reveal_style(index)}>
+            <article class="bento-card {size_class}{first_te_amo_class} reveal-on-scroll" {_reveal_style(index)}>
+              {heart_html}
               <div class="metric-label">{label}</div>
               <div class="metric-number">{value}</div>
               <p class="metric-description">{description}</p>
@@ -174,12 +184,20 @@ def render_timeline(events: list[dict[str, str]]) -> None:
 def build_timeline_html(events: list[dict[str, str]]) -> str:
     """Build romantic timeline event card HTML."""
     event_cards = []
+    heart_data_uri = _build_optional_image_data_uri(HEART_IMAGE)
     for index, event in enumerate(events):
+        raw_title = event.get("title", "")
+        first_te_amo_class = _first_te_amo_card_class(raw_title)
+        heart_html = _build_first_te_amo_heart_html(
+            heart_data_uri,
+            raw_title,
+        )
         event_cards.append(
             f"""
-            <article class="timeline-card reveal-on-scroll" {_reveal_style(index)}>
+            <article class="timeline-card{first_te_amo_class} reveal-on-scroll" {_reveal_style(index)}>
+              {heart_html}
               <div class="date-pill">{_escape_value(event.get("date", ""))}</div>
-              <div class="timeline-title">{_escape_value(event.get("title", ""))}</div>
+              <div class="timeline-title">{_escape_value(raw_title)}</div>
               <p class="timeline-detail">{_escape_value(event.get("detail", ""))}</p>
             </article>
             """
@@ -223,10 +241,11 @@ def render_quotes(messages: list[dict[str, str]]) -> None:
 def build_quote_cards_html(messages: list[dict[str, str]]) -> str:
     """Build featured romantic message card HTML."""
     quote_cards = []
+    parchment_data_uri = _build_optional_image_data_uri(PARCHMENT_IMAGE)
     for index, message in enumerate(messages):
         quote_cards.append(
             f"""
-            <article class="quote-card reveal-on-scroll" {_reveal_style(index)}>
+            <article class="quote-card scroll-quote-card reveal-on-scroll" {_quote_card_style(index, parchment_data_uri)}>
               <p class="quote-text">"{_escape_value(message.get("message", ""))}"</p>
               <div class="quote-sender">{_escape_value(message.get("sender", ""))}</div>
               <div class="quote-date">{_escape_value(message.get("date", ""))}</div>
@@ -357,6 +376,16 @@ def _build_image_data_uri(image_path: Path, mime_type: str) -> str:
     return f"data:{mime_type};base64,{encoded_image}"
 
 
+def _build_optional_image_data_uri(image_path: Path) -> str:
+    if not image_path.exists():
+        return ""
+
+    return _build_image_data_uri(
+        image_path=image_path,
+        mime_type=STRAWBERRY_IMAGE_MIME_TYPE,
+    )
+
+
 def render_reveal_observer() -> None:
     """Inject the reveal-on-scroll observer after the landing HTML exists."""
     streamlit_components.html(REVEAL_OBSERVER_HTML, height=0)
@@ -389,6 +418,35 @@ def _card_size_class(size: Any) -> str:
 
 def _reveal_style(index: int) -> str:
     return f'style="--reveal-delay: {min(index * 90, 360)}ms;"'
+
+
+def _quote_card_style(index: int, parchment_data_uri: str) -> str:
+    reveal_delay = min(index * 90, 360)
+    if not parchment_data_uri:
+        return f'style="--reveal-delay: {reveal_delay}ms;"'
+
+    return (
+        f'style="--reveal-delay: {reveal_delay}ms; '
+        f"--scroll-bg-image: url('{parchment_data_uri}');\""
+    )
+
+
+def _first_te_amo_card_class(value: Any) -> str:
+    if _is_first_te_amo(value):
+        return " first-te-amo-card"
+
+    return ""
+
+
+def _build_first_te_amo_heart_html(heart_data_uri: str, value: Any) -> str:
+    if not heart_data_uri or not _is_first_te_amo(value):
+        return ""
+
+    return f'<img class="first-te-amo-heart" src="{heart_data_uri}" alt="" />'
+
+
+def _is_first_te_amo(value: Any) -> bool:
+    return "primer te amo" in str(value).casefold()
 
 
 def _message_bubble_class(sender: str) -> str:
@@ -429,15 +487,11 @@ def _build_special_message_block_html(block: dict[str, Any]) -> str:
         return ""
 
     block_type = _safe_component_text(block.get("type"), "message_block")
-    block_title = _safe_component_text(
-        block.get("title"),
-        _default_special_block_title(block_type),
-    )
+    block_title = _optional_component_text(block.get("title"))
+    block_header = _build_special_message_block_header_html(block_title)
     return f"""
           <section class="special-message-block special-message-block-{_component_class_token(block_type)}">
-            <div class="ig-chat-header">
-              <div class="metric-label">{_escape_value(block_title)}</div>
-            </div>
+            {block_header}
             <div class="ig-message-list">
               {rendered_bubbles}
             </div>
@@ -494,15 +548,6 @@ def _build_message_meta_html(sender_text: str, date_text: str) -> str:
     )
 
 
-def _default_special_block_title(block_type: str) -> str:
-    if block_type == "her_messages":
-        return "Cosas bonitas que ella me dijo"
-    if block_type == "conversation_pair":
-        return "Una conversacion que quiero recordar"
-
-    return "Mensaje guardado"
-
-
 def _component_class_token(value: Any) -> str:
     text = _safe_component_text(value, "message_block").casefold()
     return "".join(character if character.isalnum() else "-" for character in text)
@@ -514,6 +559,24 @@ def _safe_component_text(value: Any, fallback: str) -> str:
 
     text = str(value).strip()
     return text or fallback
+
+
+def _optional_component_text(value: Any) -> str:
+    if value is None:
+        return ""
+
+    return str(value).strip()
+
+
+def _build_special_message_block_header_html(title: str) -> str:
+    if not title:
+        return ""
+
+    return f"""
+            <div class="ig-chat-header">
+              <div class="special-message-block-title">{_escape_value(title)}</div>
+            </div>
+        """
 
 
 def _format_component_date(value: Any) -> str:

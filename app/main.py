@@ -63,11 +63,6 @@ def run_app() -> None:
     )
     render_rhythm_charts(landing_data["rhythm"])
 
-    render_section_header(
-        kicker="Frases bonitas",
-        title=ROMANTIC_CONTENT["special_message"]["title"],
-        copy="Me gusta saber lo que sientes.",
-    )
     render_special_message(landing_data["special_message"])
 
     render_section_header(

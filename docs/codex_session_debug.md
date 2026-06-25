@@ -1,5 +1,138 @@
 ## Bug 4: HTML renderizado como texto plano en tarjetas
 
+## Ajuste KPIs: tipografia, orden y promedio diario
+
+### Motivo
+
+La seccion `Pequenos datos bonitos` necesitaba priorizar los cards mas
+importantes a la izquierda y agregar un KPI de promedio diario. Ademas, los
+subtitulos internos del bloque especial debian usar la misma fuente decorativa
+del titulo principal y el corazon 8-bit debia quedar sin fondo opaco.
+
+### Cambio aplicado
+
+- `ui/styles.py`: `.special-message-block-title` usa `--font-script` y tamano
+  `calc(clamp(1.8rem, 4vw, 2.7rem) - 2px)`.
+- `services/romantic_metrics.py`: `_build_summary_cards()` reordena los KPIs
+  para priorizar `Mensajes compartidos`, `Primer te amo` y `Mes mas intenso`.
+- `db/queries.py`: se agrego `ROMANTIC_AVERAGE_DAILY_MESSAGES_QUERY`.
+- `db/romantic_queries.py`: se agrego `fetch_average_daily_messages()`.
+- `services/romantic_metrics.py`: se agrego el KPI `Promedio diario`.
+- `ui/styles.py`: `.bento-grid` usa `grid-auto-flow: dense` para que cards
+  pequenos rellenen la zona derecha en desktop.
+- `ui/assets/corazon.png`: se transparento el fondo claro conectado a los
+  bordes del PNG.
+
+### Verificacion
+
+```powershell
+.\venv\Scripts\python.exe -m pytest tests/test_ui_components.py tests/test_romantic_metrics.py tests/test_romantic_queries.py
+```
+
+## Ajuste visual: pergamino por asset y corazon 8-bit
+
+### Motivo
+
+La seccion `Mensajes para volver a leer despacio` debia usar el PNG de
+pergamino entregado en la raiz del proyecto como marco/fondo real de cada
+mensaje. Los cards relacionados con `Primer te amo` debian mostrar un detalle
+de corazon 8-bit sin cambiar la logica de datos.
+
+### Assets
+
+- `perrgamino.png` se movio a `ui/assets/perrgamino.png`.
+- `corazon.png` se movio a `ui/assets/corazon.png`.
+
+### Cambio aplicado
+
+- `ui/components.py`: `build_quote_cards_html()` carga el pergamino como
+  `data URI` y lo expone por la variable CSS `--scroll-bg-image`.
+- `ui/styles.py`: `.scroll-quote-card` usa `--scroll-bg-image` como capa de
+  fondo y mantiene gradientes rosa/fucsia para legibilidad.
+- `ui/components.py`: `build_metric_cards_html()` y `build_timeline_html()`
+  insertan el corazon solo si el label/titulo contiene `Primer te amo`.
+- `ui/styles.py`: `.first-te-amo-card` y `.first-te-amo-heart` controlan el
+  posicionamiento del ornamento 8-bit.
+
+### Verificacion
+
+```powershell
+.\venv\Scripts\python.exe -m pytest tests/test_ui_components.py tests/test_romantic_metrics.py
+```
+
+## Ajuste visual: pergaminos romanticos en frases bonitas
+
+### Motivo
+
+La seccion `Mensajes para volver a leer despacio` debia mantener sus 9
+mensajes, pero dejar de verse como cards rectangulares normales.
+
+### Cambio aplicado
+
+- `ui/components.py`: las cards de frases bonitas ahora usan
+  `quote-card scroll-quote-card`.
+- `ui/styles.py`: `.scroll-quote-card` agrega fondo rosado claro,
+  bordes fucsia suaves, sombras, textura por gradientes y pseudo-elementos
+  `::before` / `::after` para simular extremos de pergamino.
+- `ui/styles.py`: `.special-message-block-title` queda en cursiva para los
+  subtitulos internos `Cosas bonitas que ella me dijo` y
+  `Una conversacion que quiero recordar`.
+
+### Como ajustar el efecto
+
+Editar en `ui/styles.py`:
+
+```css
+.scroll-quote-card
+.scroll-quote-card::before
+.scroll-quote-card::after
+```
+
+No requiere assets externos ni cambios en IDs, ETL o queries.
+
+### Verificacion
+
+```powershell
+.\venv\Scripts\python.exe -m pytest tests/test_ui_components.py tests/test_romantic_metrics.py
+```
+
+## Ajuste bloque especial: titulos internos configurables
+
+### Motivo
+
+La seccion `Un mensaje que quiero guardar` mostraba un encabezado externo
+duplicado antes de la card principal: `Frases bonitas`, el titulo de la
+seccion y el texto `Me gusta saber lo que sientes.`. Ademas, los subtitulos
+internos de los bloques especiales no debian depender de textos hardcodeados.
+
+### Cambio aplicado
+
+- `app/main.py`: se elimino el `render_section_header()` previo a
+  `render_special_message()`.
+- `app/content_config.py`: los titulos internos se parametrizan en
+  `ROMANTIC_CONTENT["special_message"]["blocks"][*]["title"]`.
+- `services/romantic_metrics.py`: los titulos vacios se conservan como vacios
+  para que no aparezcan defaults.
+- `ui/components.py`: cada titulo interno se renderiza solo si existe.
+- `ui/styles.py`: `.special-message-block-title` aplica glow fucsia suave con
+  `text-shadow`.
+
+### Como ocultar un titulo interno
+
+Dejar el campo vacio:
+
+```python
+"title": ""
+```
+
+La app no renderiza el titulo ni deja un header vacio.
+
+### Verificacion
+
+```powershell
+.\venv\Scripts\python.exe -m pytest tests/test_ui_components.py tests/test_romantic_metrics.py
+```
+
 ### Sintoma
 
 La app mostraba bloques HTML crudos en pantalla, por ejemplo `<article class="timeline-card">`.

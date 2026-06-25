@@ -25,14 +25,14 @@ ROMANTIC_CONTENT: dict[str, Any] = {
         "subtitle": "Hay palabras que merecen quedarse <strong>aquí</strong>.",
         "message_id": 1440,
         "blocks": [
-                        {
+            {
                 "type": "her_messages",
-                "title": "",
-                "message_ids": [5038,5039,5040,5041,5042], 
-            },  
-            {  
+                "title": "Cosas bonitas que que me dijiste",
+                "message_ids": [5038, 5039, 5040, 5041, 5042],
+            },
+            {
                 "type": "conversation_pair",
-                "title": "",
+                "title": "Una conversacion que quiero recordar",
                 "messages": [
                     {
                         "role": "me",
@@ -82,7 +82,6 @@ ROMANTIC_CONTENT: dict[str, Any] = {
                         "role": "her",
                         "message_id": 5506,
                     },
-         
                 ],
             },
         ],

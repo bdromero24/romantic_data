@@ -100,6 +100,11 @@ def test_get_romantic_landing_metrics_builds_story_data(monkeypatch) -> None:
     )
     monkeypatch.setattr(
         romantic_metrics,
+        "fetch_average_daily_messages",
+        lambda: 26.7,
+    )
+    monkeypatch.setattr(
+        romantic_metrics,
         "fetch_romantic_word_counts",
         lambda limit: [{"word": "amor", "word_count": 33}],
     )
@@ -172,10 +177,20 @@ def test_get_romantic_landing_metrics_builds_story_data(monkeypatch) -> None:
 
     assert result["hero"]["title"] == "Nuestra historia"
     assert result["summary_cards"][0]["value"] == "1.200"
-    assert result["summary_cards"][2]["value"] == "15/01/2026"
-    assert result["summary_cards"][3]["value"] == "7"
-    assert result["summary_cards"][4]["label"] == "Veces que dijimos te extraño"
-    assert result["summary_cards"][8] == {
+    assert result["summary_cards"][0]["label"] == "Mensajes compartidos"
+    assert result["summary_cards"][1]["label"] == "Primer te amo"
+    assert result["summary_cards"][1]["value"] == "15/01/2026"
+    assert result["summary_cards"][2]["label"] == "Mes mas intenso"
+    assert result["summary_cards"][3]["label"] == "Dias hablando"
+    assert result["summary_cards"][4] == {
+        "label": "Promedio diario",
+        "value": "26,7",
+        "description": "mensajes al dia entre los dos.",
+        "size": "small",
+    }
+    assert result["summary_cards"][5]["value"] == "7"
+    assert result["summary_cards"][6]["label"] == "Veces que dijimos te extraño"
+    assert result["summary_cards"][9] == {
         "label": "Hater de tiempo completo",
         "value": "odio",
         "description": "Utilizaste la palabra odio 11 veces",
@@ -387,6 +402,41 @@ def test_special_message_blocks_preserve_configured_order(monkeypatch) -> None:
     assert result["blocks"][0]["messages"][1]["message"] == "Primer mensaje"
     assert result["blocks"][1]["messages"][0]["role"] == "me"
     assert result["blocks"][1]["messages"][1]["role"] == "her"
+
+
+def test_special_message_block_titles_can_be_empty(monkeypatch) -> None:
+    monkeypatch.setitem(
+        romantic_metrics.ROMANTIC_CONTENT,
+        "special_message",
+        {
+            "title": "Un mensaje que quiero guardar",
+            "subtitle": "Algunas palabras merecen quedarse aqui.",
+            "message_id": None,
+            "blocks": [
+                {
+                    "type": "her_messages",
+                    "title": "",
+                    "message_ids": [1],
+                },
+            ],
+        },
+    )
+    monkeypatch.setattr(
+        romantic_metrics,
+        "fetch_messages_by_ids",
+        lambda message_ids: [
+            {
+                "id": 1,
+                "sender": "Mar",
+                "message": "Mensaje de ella",
+                "timestamp": datetime(2026, 1, 1, tzinfo=timezone.utc),
+            }
+        ],
+    )
+
+    result = romantic_metrics._build_special_message_card()
+
+    assert result["blocks"][0]["title"] == ""
 
 
 def test_manual_featured_messages_use_configured_ids(monkeypatch) -> None:

@@ -14,6 +14,7 @@ from app.content_config import (
 from db.romantic_queries import (
     count_hater_word_occurrences,
     count_pattern_occurrences,
+    fetch_average_daily_messages,
     fetch_conversation_starter,
     fetch_favorite_hour,
     fetch_first_message,
@@ -96,6 +97,7 @@ def get_romantic_landing_metrics() -> dict[str, Any]:
         peak_month = fetch_peak_month()
         favorite_hour = fetch_favorite_hour()
         conversation_starter = fetch_conversation_starter()
+        average_daily_messages = fetch_average_daily_messages()
         hater_full_time = _build_hater_full_time_card(
             count_hater_word_occurrences(HER_SENDER_NAME)
         )
@@ -110,6 +112,7 @@ def get_romantic_landing_metrics() -> dict[str, Any]:
                 first_te_amo=first_te_amo,
                 romantic_words=romantic_words,
                 hater_full_time=hater_full_time,
+                average_daily_messages=average_daily_messages,
             ),
             "hater_full_time": hater_full_time,
             "phrase_counts": phrase_counts,
@@ -179,6 +182,7 @@ def _build_summary_cards(
     first_te_amo: dict[str, Any] | None,
     romantic_words: list[dict[str, str]],
     hater_full_time: dict[str, str],
+    average_daily_messages: float,
 ) -> list[dict[str, str]]:
     counts_by_key = {
         phrase_count["key"]: phrase_count["count"]
@@ -192,18 +196,35 @@ def _build_summary_cards(
             "size": "large",
         },
         {
-            "label": "Dias hablando",
-            "value": _format_number(summary.get("total_conversation_days", 0)),
-            "description": "Dias en los que nos encontramos en palabras.",
-            "size": "small",
-        },
-        {
             "label": "Primer te amo",
             "value": _format_date(
                 first_te_amo.get("timestamp") if first_te_amo else None
             ),
             "description": _format_sender_description(first_te_amo),
             "size": "large",
+        },
+        {
+            "label": "Mes mas intenso",
+            "value": _format_month(
+                peak_month.get("message_month") if peak_month else None
+            ),
+            "description": _format_count_description(
+                peak_month,
+                "mensajes en ese mes",
+            ),
+            "size": "large",
+        },
+        {
+            "label": "Dias hablando",
+            "value": _format_number(summary.get("total_conversation_days", 0)),
+            "description": "Dias en los que nos encontramos en palabras.",
+            "size": "small",
+        },
+        {
+            "label": "Promedio diario",
+            "value": _format_decimal(average_daily_messages),
+            "description": "mensajes al dia entre los dos.",
+            "size": "small",
         },
         {
             "label": "Veces que dijimos te amo",
@@ -216,17 +237,6 @@ def _build_summary_cards(
             "value": _format_number(counts_by_key.get("te_extrano", 0)),
             "description": "Cuando nos hacemos falta.",
             "size": "small",
-        },
-        {
-            "label": "Mes mas intenso",
-            "value": _format_month(
-                peak_month.get("message_month") if peak_month else None
-            ),
-            "description": _format_count_description(
-                peak_month,
-                "mensajes en ese mes",
-            ),
-            "size": "large",
         },
         {
             "label": "Nuestra hora favorita",
@@ -459,7 +469,7 @@ def _build_her_messages_block(block: dict[str, Any]) -> dict[str, Any] | None:
 
     return {
         "type": "her_messages",
-        "title": _safe_text(block.get("title"), "Cosas bonitas que ella me dijo"),
+        "title": _optional_text(block.get("title")),
         "messages": messages,
     }
 
@@ -501,10 +511,7 @@ def _build_conversation_pair_block(block: dict[str, Any]) -> dict[str, Any] | No
 
     return {
         "type": "conversation_pair",
-        "title": _safe_text(
-            block.get("title"),
-            "Una conversación que quiero recordar",
-        ),
+        "title": _optional_text(block.get("title")),
         "messages": messages,
     }
 
@@ -705,6 +712,18 @@ def _format_number(value: Any) -> str:
         return "0"
 
 
+def _format_decimal(value: Any) -> str:
+    try:
+        number = float(value or 0)
+    except (TypeError, ValueError):
+        return "0"
+
+    if number.is_integer():
+        return _format_number(number)
+
+    return f"{number:.1f}".replace(".", ",")
+
+
 def _format_hour(value: Any) -> str:
     try:
         hour = int(value)
@@ -739,5 +758,16 @@ def _safe_text(value: Any, fallback: str) -> str:
     text = str(value).strip()
     if not text or text.lower() in {"null", "none", "nan", "na", "n/a"}:
         return fallback
+
+    return text
+
+
+def _optional_text(value: Any) -> str:
+    if value is None:
+        return ""
+
+    text = str(value).strip()
+    if text.lower() in {"null", "none", "nan", "na", "n/a"}:
+        return ""
 
     return text

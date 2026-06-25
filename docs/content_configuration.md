@@ -43,6 +43,26 @@ El circulo decorativo y la imagen se controlan en `ui/styles.py` con:
 
 Este ajuste no modifica ETL, consultas ni logica de datos.
 
+## Assets visuales de secciones romanticas
+
+Los assets decorativos de la landing viven en:
+
+```text
+ui/assets/
+```
+
+Assets actuales:
+
+```text
+ui/assets/strawberry_8bit.png
+ui/assets/perrgamino.png
+ui/assets/corazon.png
+```
+
+`ui/components.py` carga estos PNG como `data:image/png;base64` con
+`_build_image_data_uri()`, para que Streamlit los renderice sin rutas locales
+visibles en la UI.
+
 ## Como editar "Un mensaje que quiero guardar"
 
 La seccion se configura en:
@@ -50,6 +70,14 @@ La seccion se configura en:
 ```python
 ROMANTIC_CONTENT["special_message"]["blocks"]
 ```
+
+La card principal de esta seccion se renderiza desde:
+
+```text
+ui/components.py
+```
+
+con `render_special_message()` y `build_special_message_html()`.
 
 La estructura permite varios bloques manuales. Si `blocks` no tiene IDs validos, la app conserva el fallback heredado de:
 
@@ -97,6 +125,39 @@ Si aparece un rol no reconocido, la app lo trata como `"her"`.
 
 Cada bloque `conversation_pair` se renderiza en su propio recuadro visual, separado de los bloques `her_messages`, y conserva el orden manual de `messages`.
 
+### Titulos internos del bloque especial
+
+Los subtitulos internos de cada bloque se editan en:
+
+```python
+ROMANTIC_CONTENT["special_message"]["blocks"][*]["title"]
+```
+
+Ejemplos:
+
+```python
+"title": "Cosas bonitas que ella me dijo"
+"title": "Una conversacion que quiero recordar"
+```
+
+Estos titulos se renderizan con la clase CSS
+`.special-message-block-title` en `ui/styles.py`, que aplica brillo fucsia
+suave mediante `text-shadow`.
+
+La tipografia de esos subtitulos tambien se controla desde
+`.special-message-block-title`. Usa la misma familia decorativa que el titulo
+principal del bloque especial (`--font-script`) y un tamano calculado como
+2 px menor que `.special-message-kicker`.
+
+Para ocultar un titulo interno, dejarlo vacio:
+
+```python
+"title": ""
+```
+
+Cuando queda vacio, la app no renderiza un titulo ni deja un header vacio en
+ese bloque.
+
 ## Como editar "Mensajes para volver a leer despacio"
 
 La seccion se configura en:
@@ -104,6 +165,9 @@ La seccion se configura en:
 ```python
 ROMANTIC_CONTENT["featured_quotes"]["message_ids"]
 ```
+
+La seccion se renderiza desde `ui/components.py` con `render_quotes()` y
+`build_quote_cards_html()`.
 
 Ejemplo:
 
@@ -114,6 +178,117 @@ Ejemplo:
 Si la lista contiene IDs, la app muestra exactamente esos mensajes disponibles, en el orden configurado. Si la lista queda vacia, se activa el fallback automatico con `fallback_limit`.
 
 El fallback automatico solo se usa cuando `message_ids` esta vacio. Si la lista tiene valores invalidos o IDs inexistentes, esos valores se ignoran de forma segura y no se muestra una seccion vacia con solo titulo.
+
+### Estilo pergamino romantico
+
+Cada mensaje de esta seccion usa:
+
+```html
+class="quote-card scroll-quote-card"
+```
+
+La seccion se renderiza desde `ui/components.py` con `render_quotes()` y
+`build_quote_cards_html()`.
+
+El asset usado para el pergamino queda en:
+
+```text
+ui/assets/perrgamino.png
+```
+
+El efecto pergamino se controla en `ui/styles.py` con `.scroll-quote-card` y
+sus pseudo-elementos `::before` y `::after`. Para ajustar el efecto, cambia
+solo esos selectores: `background-image`, fondos `linear-gradient`, borde,
+sombra, radio, padding y barras decorativas superior/inferior.
+
+Los IDs y la logica de carga no dependen de este estilo.
+
+## Corazon 8-bit en "Primer te amo"
+
+El asset del corazon 8-bit queda en:
+
+```text
+ui/assets/corazon.png
+```
+
+Los cards relacionados con `Primer te amo` se renderizan desde:
+
+```text
+ui/components.py
+```
+
+Renderers implicados:
+
+```python
+build_metric_cards_html()
+build_timeline_html()
+```
+
+La clase CSS que controla el contenedor marcado es:
+
+```css
+.first-te-amo-card
+```
+
+La clase CSS que posiciona el corazon 8-bit es:
+
+```css
+.first-te-amo-heart
+```
+
+El corazon se inserta solo cuando el label o titulo del card contiene
+`Primer te amo`. No cambia la logica del calculo ni los IDs configurados.
+
+El fondo transparente del asset se corrige directamente en
+`ui/assets/corazon.png`; el CSS mantiene `background: transparent`,
+`image-rendering: pixelated` y no agrega contenedores con fondo.
+
+## KPIs de "Pequenos datos bonitos"
+
+El layout de los KPIs se renderiza desde:
+
+```text
+ui/components.py
+```
+
+con `render_metric_cards()` y `build_metric_cards_html()`.
+
+El orden de los cards se arma en:
+
+```text
+services/romantic_metrics.py
+```
+
+con `_build_summary_cards()`. Los tres cards grandes priorizados son:
+
+```text
+Mensajes compartidos
+Primer te amo
+Mes mas intenso
+```
+
+El grid visual se controla en `ui/styles.py` con `.bento-grid`,
+`.bento-card`, `.bento-card.large` y `.bento-card.full`.
+
+### Promedio diario
+
+El KPI `Promedio diario` se calcula con:
+
+```text
+db/queries.py -> ROMANTIC_AVERAGE_DAILY_MESSAGES_QUERY
+db/romantic_queries.py -> fetch_average_daily_messages()
+```
+
+La query agrupa mensajes validos por dia calendario y calcula
+`AVG(total_messages)`, considerando ambos sender.
+
+Verificacion visual recomendada:
+
+1. Ejecutar `streamlit run app/main.py`.
+2. Abrir la seccion `Pequenos datos bonitos`.
+3. Confirmar que los tres cards grandes aparecen primero y a la izquierda en
+   desktop.
+4. Confirmar que `Promedio diario` aparece como card secundaria sin overflow.
 
 ## Que ID usar
 

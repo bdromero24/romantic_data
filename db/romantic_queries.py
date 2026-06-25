@@ -9,6 +9,7 @@ from sqlalchemy.sql.elements import TextClause
 
 from db.connection import get_engine
 from db.queries import (
+    ROMANTIC_AVERAGE_DAILY_MESSAGES_QUERY,
     ROMANTIC_CONVERSATION_STARTER_QUERY,
     ROMANTIC_FAVORITE_HOUR_QUERY,
     ROMANTIC_FIRST_MESSAGE_QUERY,
@@ -147,6 +148,15 @@ def fetch_conversation_starter() -> dict[str, Any] | None:
         ROMANTIC_CONVERSATION_STARTER_QUERY,
         "fetch_conversation_starter",
     )
+
+
+def fetch_average_daily_messages() -> float:
+    """Return the average valid messages per conversation day."""
+    row = _fetch_one_dict(
+        ROMANTIC_AVERAGE_DAILY_MESSAGES_QUERY,
+        "fetch_average_daily_messages",
+    )
+    return float(row["avg_daily_messages"] or 0)
 
 
 def fetch_hourly_rhythm() -> list[dict[str, Any]]:
