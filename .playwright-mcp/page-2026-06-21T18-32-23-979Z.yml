@@ -1,0 +1,440 @@
+- generic [ref=e6]:
+  - generic [ref=e11]:
+    - generic [ref=e12]: 16/10/2025 - 05/10/2026
+    - heading "Nuestra historia" [level=1] [ref=e14]:
+      - text: Nuestra historia
+      - generic [ref=e15]:
+        - link "Link to heading":
+          - /url: "#nuestra-historia"
+          - img
+    - paragraph [ref=e16]: Contada con mensajes, recuerdos y pequenos datos bonitos.
+    - generic [ref=e17]: Un pedacito de nosotros, convertido en una pagina para recordar.
+  - generic [ref=e22]:
+    - generic [ref=e23]: Nuestra historia en numeros
+    - heading "Pequeños datos bonitos" [level=2] [ref=e25]:
+      - text: Pequeños datos bonitos
+      - generic [ref=e26]:
+        - link "Link to heading":
+          - /url: "#pequenos-datos-bonitos"
+          - img
+    - paragraph [ref=e27]: Lo que antes eran conteos ahora son recuerdos de todo lo que hemos compartido.
+  - generic [ref=e32]:
+    - article [ref=e33]:
+      - generic [ref=e34]: Mensajes compartidos
+      - generic [ref=e35]: "14.308"
+      - paragraph [ref=e36]: Cada uno guardando una parte de nuestra historia.
+    - article [ref=e37]:
+      - generic [ref=e38]: Dias hablando
+      - generic [ref=e39]: "198"
+      - paragraph [ref=e40]: Dias en los que nos encontramos en palabras.
+    - article [ref=e41]:
+      - generic [ref=e42]: Primer te amo
+      - generic [ref=e43]: 23/04/2026
+      - paragraph [ref=e44]: "𝑴𝒂𝒓🍓: Te amo"
+    - article [ref=e45]:
+      - generic [ref=e46]: Veces que dijimos te amo
+      - generic [ref=e47]: "301"
+      - paragraph [ref=e48]: Una frase pequena para algo enorme.
+    - article [ref=e49]:
+      - generic [ref=e50]: Veces que dijimos te extraño
+      - generic [ref=e51]: "9"
+      - paragraph [ref=e52]: Cuando nos hacemos falta.
+    - article [ref=e53]:
+      - generic [ref=e54]: Mes mas intenso
+      - generic [ref=e55]: 05/2026
+      - paragraph [ref=e56]: 3.747 mensajes en ese mes.
+    - article [ref=e57]:
+      - generic [ref=e58]: Nuestra hora favorita
+      - generic [ref=e59]: 22:00
+      - paragraph [ref=e60]: 2.292 mensajes a esa hora.
+    - article [ref=e61]:
+      - generic [ref=e62]: Palabra bonita mas usada
+      - generic [ref=e63]: amor
+      - paragraph [ref=e64]: Aparece 783 veces entre nuestras palabras bonitas.
+    - article [ref=e65]:
+      - generic [ref=e66]: Hater de tiempo completo
+      - generic [ref=e67]: odio
+      - paragraph [ref=e68]: Utilizaste la palabra odio 0 veces
+  - article [ref=e73]:
+    - generic [ref=e74]: Quien prendio mas veces la conversacion
+    - generic [ref=e75]: David
+    - paragraph [ref=e76]: 173 dias iniciando la conversacion.
+  - generic [ref=e81]:
+    - generic [ref=e82]: Nuestro ritmo
+    - heading "Cuando mas nos encontramos" [level=2] [ref=e84]:
+      - text: Cuando mas nos encontramos
+      - generic [ref=e85]:
+        - link "Link to heading":
+          - /url: "#cuando-mas-nos-encontramos"
+          - img
+    - paragraph [ref=e86]: Horas, dias y meses donde nuestras conversaciones tuvieron mas vida.
+  - article [ref=e91]
+  - heading "Nuestra hora favorita para hablar" [level=3] [ref=e97]:
+    - text: Nuestra hora favorita para hablar
+    - generic [ref=e98]:
+      - link "Link to heading":
+        - /url: "#nuestra-hora-favorita-para-hablar"
+        - img
+  - generic [ref=e101]:
+    - generic [ref=e103]:
+      - button "Show data" [ref=e106] [cursor=pointer]:
+        - img [ref=e107]
+      - button "Fullscreen" [ref=e112] [cursor=pointer]:
+        - img [ref=e113]
+    - generic [ref=e116]:
+      - generic "Vega visualization" [ref=e117]:
+        - img [ref=e118]:
+          - generic [ref=e123]:
+            - 'generic "X-axis for a discrete scale with 24 values: 00:00, 01:00, 02:00, 03:00, 04:00, ending with 23:00" [ref=e127]':
+              - generic [ref=e129]:
+                - generic:
+                  - generic: 00:00
+                  - generic: 01:00
+                  - generic: 02:00
+                  - generic: 03:00
+                  - generic: 04:00
+                  - generic: 05:00
+                  - generic: 06:00
+                  - generic: 07:00
+                  - generic: 08:00
+                  - generic: 09:00
+                  - generic: 10:00
+                  - generic: 11:00
+                  - generic: 12:00
+                  - generic: 13:00
+                  - generic: 14:00
+                  - generic: 15:00
+                  - generic: 16:00
+                  - generic: 17:00
+                  - generic: 18:00
+                  - generic: 19:00
+                  - generic: 20:00
+                  - generic: 21:00
+                  - generic: 22:00
+                  - generic: 23:00
+            - generic "Y-axis for a linear scale with values from 0 to 2,400" [ref=e130]:
+              - generic [ref=e132]:
+                - generic:
+                  - generic: "0"
+                  - generic: "500"
+                  - generic: 1,000
+                  - generic: 1,500
+                  - generic: 2,000
+            - generic [ref=e133]:
+              - 'generic "label: 00:00; value: 563; Momento: 00:00; Mensajes: 563" [ref=e141]'
+              - 'generic "label: 01:00; value: 273; Momento: 01:00; Mensajes: 273" [ref=e149]'
+              - 'generic "label: 02:00; value: 172; Momento: 02:00; Mensajes: 172" [ref=e157]'
+              - 'generic "label: 03:00; value: 53; Momento: 03:00; Mensajes: 53" [ref=e165]'
+              - 'generic "label: 04:00; value: 14; Momento: 04:00; Mensajes: 14" [ref=e173]'
+              - 'generic "label: 05:00; value: 4; Momento: 05:00; Mensajes: 4" [ref=e181]'
+              - 'generic "label: 06:00; value: 26; Momento: 06:00; Mensajes: 26" [ref=e189]'
+              - 'generic "label: 07:00; value: 192; Momento: 07:00; Mensajes: 192" [ref=e197]'
+              - 'generic "label: 08:00; value: 487; Momento: 08:00; Mensajes: 487" [ref=e205]'
+              - 'generic "label: 09:00; value: 342; Momento: 09:00; Mensajes: 342" [ref=e213]'
+              - 'generic "label: 10:00; value: 420; Momento: 10:00; Mensajes: 420" [ref=e221]'
+              - 'generic "label: 11:00; value: 432; Momento: 11:00; Mensajes: 432" [ref=e229]'
+              - 'generic "label: 12:00; value: 670; Momento: 12:00; Mensajes: 670" [ref=e237]'
+              - 'generic "label: 13:00; value: 1055; Momento: 13:00; Mensajes: 1055" [ref=e245]'
+              - 'generic "label: 14:00; value: 1272; Momento: 14:00; Mensajes: 1272" [ref=e253]'
+              - 'generic "label: 15:00; value: 436; Momento: 15:00; Mensajes: 436" [ref=e261]'
+              - 'generic "label: 16:00; value: 383; Momento: 16:00; Mensajes: 383" [ref=e269]'
+              - 'generic "label: 17:00; value: 376; Momento: 17:00; Mensajes: 376" [ref=e277]'
+              - 'generic "label: 18:00; value: 599; Momento: 18:00; Mensajes: 599" [ref=e285]'
+              - 'generic "label: 19:00; value: 629; Momento: 19:00; Mensajes: 629" [ref=e293]'
+              - 'generic "label: 20:00; value: 719; Momento: 20:00; Mensajes: 719" [ref=e301]'
+              - 'generic "label: 21:00; value: 809; Momento: 21:00; Mensajes: 809" [ref=e309]'
+              - 'generic "label: 22:00; value: 2292; Momento: 22:00; Mensajes: 2292" [ref=e317]'
+              - 'generic "label: 23:00; value: 2090; Momento: 23:00; Mensajes: 2090" [ref=e325]'
+      - group "Click to view actions":
+        - img [ref=e327] [cursor=pointer]
+  - article [ref=e335]
+  - heading "Los dias donde mas nos encontramos" [level=3] [ref=e341]:
+    - text: Los dias donde mas nos encontramos
+    - generic [ref=e342]:
+      - link "Link to heading":
+        - /url: "#los-dias-donde-mas-nos-encontramos"
+        - img
+  - generic [ref=e345]:
+    - generic [ref=e347]:
+      - button "Show data" [ref=e350] [cursor=pointer]:
+        - img [ref=e351]
+      - button "Fullscreen" [ref=e356] [cursor=pointer]:
+        - img [ref=e357]
+    - generic [ref=e360]:
+      - generic "Vega visualization" [ref=e361]:
+        - img [ref=e362]:
+          - generic [ref=e367]:
+            - 'generic "X-axis for a discrete scale with 7 values: Domingo, Jueves, Lunes, Martes, Miercoles, Sabado, Viernes" [ref=e371]':
+              - generic [ref=e373]:
+                - generic:
+                  - generic: Domingo
+                  - generic: Jueves
+                  - generic: Lunes
+                  - generic: Martes
+                  - generic: Miercoles
+                  - generic: Sabado
+                  - generic: Viernes
+            - generic "Y-axis for a linear scale with values from 0 to 3,000" [ref=e374]:
+              - generic [ref=e376]:
+                - generic:
+                  - generic: "0"
+                  - generic: "500"
+                  - generic: 1,000
+                  - generic: 1,500
+                  - generic: 2,000
+                  - generic: 2,500
+                  - generic: 3,000
+            - generic [ref=e377]:
+              - 'generic "label: Lunes; value: 2387; Momento: Lunes; Mensajes: 2387" [ref=e385]'
+              - 'generic "label: Martes; value: 2822; Momento: Martes; Mensajes: 2822" [ref=e393]'
+              - 'generic "label: Miercoles; value: 2586; Momento: Miercoles; Mensajes: 2586" [ref=e401]'
+              - 'generic "label: Jueves; value: 2436; Momento: Jueves; Mensajes: 2436" [ref=e409]'
+              - 'generic "label: Viernes; value: 1432; Momento: Viernes; Mensajes: 1432" [ref=e417]'
+              - 'generic "label: Sabado; value: 1104; Momento: Sabado; Mensajes: 1104" [ref=e425]'
+              - 'generic "label: Domingo; value: 1541; Momento: Domingo; Mensajes: 1541" [ref=e433]'
+      - group "Click to view actions":
+        - img [ref=e435] [cursor=pointer]
+  - article [ref=e443]
+  - heading "Como fue creciendo nuestra historia mes a mes" [level=3] [ref=e449]:
+    - text: Como fue creciendo nuestra historia mes a mes
+    - generic [ref=e450]:
+      - link "Link to heading":
+        - /url: "#como-fue-creciendo-nuestra-historia-mes-a-mes"
+        - img
+  - generic [ref=e453]:
+    - generic [ref=e455]:
+      - button "Show data" [ref=e458] [cursor=pointer]:
+        - img [ref=e459]
+      - button "Fullscreen" [ref=e464] [cursor=pointer]:
+        - img [ref=e465]
+    - generic [ref=e468]:
+      - generic "Vega visualization" [ref=e469]:
+        - img [ref=e470]:
+          - generic [ref=e475]:
+            - 'generic "X-axis for a discrete scale with 8 values: 10/2025, 11/2025, 12/2025, 01/2026, 02/2026, ending with 05/2026" [ref=e479]':
+              - generic [ref=e481]:
+                - generic:
+                  - generic: 10/2025
+                  - generic: 11/2025
+                  - generic: 12/2025
+                  - generic: 01/2026
+                  - generic: 02/2026
+                  - generic: 03/2026
+                  - generic: 04/2026
+                  - generic: 05/2026
+            - generic "Y-axis for a linear scale with values from 0 to 4,000" [ref=e482]:
+              - generic [ref=e484]:
+                - generic:
+                  - generic: "0"
+                  - generic: "500"
+                  - generic: 1,000
+                  - generic: 1,500
+                  - generic: 2,000
+                  - generic: 2,500
+                  - generic: 3,000
+                  - generic: 3,500
+                  - generic: 4,000
+            - 'generic "month_label: 10/2025; value: 481; Mes: 10/2025; Mensajes: 481" [ref=e486]'
+            - generic [ref=e487]:
+              - 'generic "month_label: 10/2025; value: 481; Mes: 10/2025; Mensajes: 481" [ref=e488]'
+              - 'generic "month_label: 11/2025; value: 616; Mes: 11/2025; Mensajes: 616" [ref=e489]'
+              - 'generic "month_label: 12/2025; value: 567; Mes: 12/2025; Mensajes: 567" [ref=e490]'
+              - 'generic "month_label: 01/2026; value: 502; Mes: 01/2026; Mensajes: 502" [ref=e491]'
+              - 'generic "month_label: 02/2026; value: 2525; Mes: 02/2026; Mensajes: 2525" [ref=e492]'
+              - 'generic "month_label: 03/2026; value: 2511; Mes: 03/2026; Mensajes: 2511" [ref=e493]'
+              - 'generic "month_label: 04/2026; value: 3356; Mes: 04/2026; Mensajes: 3356" [ref=e494]'
+              - 'generic "month_label: 05/2026; value: 3747; Mes: 05/2026; Mensajes: 3747" [ref=e495]'
+      - group "Click to view actions":
+        - img [ref=e497] [cursor=pointer]
+  - article [ref=e505]
+  - heading "Cuanto escribio cada uno" [level=3] [ref=e511]:
+    - text: Cuanto escribio cada uno
+    - generic [ref=e512]:
+      - link "Link to heading":
+        - /url: "#cuanto-escribio-cada-uno"
+        - img
+  - generic [ref=e515]:
+    - generic [ref=e517]:
+      - button "Show data" [ref=e520] [cursor=pointer]:
+        - img [ref=e521]
+      - button "Fullscreen" [ref=e526] [cursor=pointer]:
+        - img [ref=e527]
+    - generic [ref=e530]:
+      - generic "Vega visualization" [ref=e531]:
+        - img [ref=e532]:
+          - generic [ref=e537]:
+            - generic [ref=e538]:
+              - 'generic "value: 8163; label: 𝑴𝒂𝒓🍓; Persona: 𝑴𝒂𝒓🍓; Mensajes: 8,163; Porcentaje: 57.1%" [ref=e539]'
+              - 'generic "value: 6142; label: David; Persona: David; Mensajes: 6,142; Porcentaje: 42.9%" [ref=e540]'
+            - generic [ref=e541]:
+              - 'generic "value: 8163; label: 𝑴𝒂𝒓🍓; percentage: 57.1%; Persona: 𝑴𝒂𝒓🍓; Mensajes: 8,163; Porcentaje: 57.1%" [ref=e542]': 57.1%
+              - 'generic "value: 6142; label: David; percentage: 42.9%; Persona: David; Mensajes: 6,142; Porcentaje: 42.9%" [ref=e543]': 42.9%
+            - 'generic "Symbol legend for fill color with 2 values: David, 𝑴𝒂𝒓🍓" [ref=e544]':
+              - generic [ref=e550]:
+                - generic [ref=e553]:
+                  - generic:
+                    - generic: David
+                - generic [ref=e556]:
+                  - generic:
+                    - generic: 𝑴𝒂𝒓🍓
+      - group "Click to view actions":
+        - img [ref=e558] [cursor=pointer]
+  - generic [ref=e566]:
+    - generic [ref=e567]: Frases bonitas
+    - heading "Un mensaje que quiero guardar" [level=2] [ref=e569]:
+      - text: Un mensaje que quiero guardar
+      - generic [ref=e570]:
+        - link "Link to heading":
+          - /url: "#un-mensaje-que-quiero-guardar"
+          - img
+    - paragraph [ref=e571]: Me gusta saber lo que sientes.
+  - article [ref=e576]:
+    - generic [ref=e577]:
+      - generic [ref=e578]: Un mensaje que quiero guardar
+      - paragraph [ref=e579]:
+        - text: Hay palabras que merecen quedarse
+        - strong [ref=e580]: aquí
+        - text: .
+    - generic [ref=e582]: Cosas bonitas que ella me dijo
+    - generic [ref=e583]:
+      - generic [ref=e584]:
+        - paragraph [ref=e585]: "\"Me gusta estar contigo, te amo demasiado mi amor\""
+        - generic [ref=e586]: 𝑴𝒂𝒓🍓 Â· 27/05/2026
+      - generic [ref=e587]:
+        - paragraph [ref=e588]: "\"Me gusta sentirme tranquila a tu lado y poder dormirme a tu lado\""
+        - generic [ref=e589]: 𝑴𝒂𝒓🍓 Â· 27/05/2026
+      - generic [ref=e590]:
+        - paragraph [ref=e591]: "\"Me gusta que me abraces y que me des muchos besitos en la carita\""
+        - generic [ref=e592]: 𝑴𝒂𝒓🍓 Â· 27/05/2026
+      - generic [ref=e593]:
+        - paragraph [ref=e594]: "\"Me siento feliz de estar contigo\""
+        - generic [ref=e595]: 𝑴𝒂𝒓🍓 Â· 27/05/2026
+      - generic [ref=e596]:
+        - paragraph [ref=e597]: "\"Me haces sentir muy amada mi vida\""
+        - generic [ref=e598]: 𝑴𝒂𝒓🍓 Â· 27/05/2026
+    - generic [ref=e600]: Una conversación que quiero recordar
+    - generic [ref=e601]:
+      - generic [ref=e602]:
+        - paragraph [ref=e603]: "\"Gracias por dejarme conocerte\""
+        - generic [ref=e604]: David Â· 25/05/2026
+      - generic [ref=e605]:
+        - paragraph [ref=e606]: "\"Te amo demasiado, estoy muy feliz de haberte dejado entrar en mi vida\""
+        - generic [ref=e607]: 𝑴𝒂𝒓🍓 Â· 25/05/2026
+  - generic [ref=e612]:
+    - generic [ref=e613]: Momentos
+    - heading "Lo que marco nuestra historia" [level=2] [ref=e615]:
+      - text: Lo que marco nuestra historia
+      - generic [ref=e616]:
+        - link "Link to heading":
+          - /url: "#lo-que-marco-nuestra-historia"
+          - img
+    - paragraph [ref=e617]: Una linea de tiempo con primeras veces, dias intensos y mensajes que se quedaron.
+  - generic [ref=e622]:
+    - article [ref=e623]:
+      - generic [ref=e624]: 16/10/2025
+      - generic [ref=e625]: El primer mensaje guardado
+      - paragraph [ref=e626]: "David: Si pudiste dormir con todas esas curvas que hay?"
+    - article [ref=e627]:
+      - generic [ref=e628]: 23/04/2026
+      - generic [ref=e629]: El primer te amo
+      - paragraph [ref=e630]: "𝑴𝒂𝒓🍓: Te amo"
+    - article [ref=e631]:
+      - generic [ref=e632]: 19/04/2026
+      - generic [ref=e633]: El primer te extraño
+      - paragraph [ref=e634]: "𝑴𝒂𝒓🍓: Te extraño amor, extraño dormirme en tus brazos :("
+    - article [ref=e635]:
+      - generic [ref=e636]: 02/03/2026
+      - generic [ref=e637]: Primera vez que te hice feliz
+      - paragraph [ref=e638]: "𝑴𝒂𝒓🍓: Me gusta como eres conmigo, me haces feliz"
+    - article [ref=e639]:
+      - generic [ref=e640]: 27/05/2026
+      - generic [ref=e641]: El día que más hablamos
+      - paragraph [ref=e642]: 343 mensajes en ese dia.
+    - article [ref=e643]:
+      - generic [ref=e644]: 05/2026
+      - generic [ref=e645]: Nuestro mes más intenso
+      - paragraph [ref=e646]: 3.747 mensajes en ese mes.
+  - generic [ref=e651]:
+    - generic [ref=e652]: Frases bonitas
+    - heading "Mensajes para volver a leer despacio" [level=2] [ref=e654]:
+      - text: Mensajes para volver a leer despacio
+      - generic [ref=e655]:
+        - link "Link to heading":
+          - /url: "#mensajes-para-volver-a-leer-despacio"
+          - img
+    - paragraph [ref=e656]: Mensajes que no quiero olvidar...
+  - generic [ref=e661]:
+    - article [ref=e662]:
+      - paragraph [ref=e663]: "\"¿Tu por que me amas?\""
+      - generic [ref=e664]: 𝑴𝒂𝒓🍓
+      - generic [ref=e665]: 19/05/2026
+    - article [ref=e666]:
+      - paragraph [ref=e667]: "\"Porque me haces sentir que el amor es un sentimiento fácil y tranquilo, valoro demasiado la tranquilidad y poder sentirme en confianza\""
+      - generic [ref=e668]: David
+      - generic [ref=e669]: 19/05/2026
+    - article [ref=e670]:
+      - paragraph [ref=e671]: "\"Me hiciste sentir muy segura en ese momento, y ahora me siento tranquila a tu lado\""
+      - generic [ref=e672]: 𝑴𝒂𝒓🍓
+      - generic [ref=e673]: 19/05/2026
+    - article [ref=e674]:
+      - paragraph [ref=e675]: "\"Hombre mentiroso\""
+      - generic [ref=e676]: 𝑴𝒂𝒓🍓
+      - generic [ref=e677]: 19/05/2026
+    - article [ref=e678]:
+      - paragraph [ref=e679]: "\"Gracias por nunca haber perdido la fe amor\""
+      - generic [ref=e680]: 𝑴𝒂𝒓🍓
+      - generic [ref=e681]: 19/05/2026
+    - article [ref=e682]:
+      - paragraph [ref=e683]: "\"Yo creo que voy a soñar con tus ojitos de tantas veces que he visto esa foto en este rato\""
+      - generic [ref=e684]: David
+      - generic [ref=e685]: 07/04/2026
+  - generic [ref=e690]:
+    - generic [ref=e691]: Nuestro lenguaje
+    - heading "Las palabras que mas nos representan" [level=2] [ref=e693]:
+      - text: Las palabras que mas nos representan
+      - generic [ref=e694]:
+        - link "Link to heading":
+          - /url: "#las-palabras-que-mas-nos-representan"
+          - img
+    - paragraph [ref=e695]: Palabras pequeñas que aparecen muchas veces porque tambien hacen parte de nosotros.
+  - generic [ref=e700]:
+    - article [ref=e701]:
+      - strong [ref=e702]: amor
+      - text: 783 veces
+    - article [ref=e703]:
+      - strong [ref=e704]: feliz
+      - text: 130 veces
+    - article [ref=e705]:
+      - strong [ref=e706]: linda
+      - text: 88 veces
+    - article [ref=e707]:
+      - strong [ref=e708]: bonita
+      - text: 79 veces
+    - article [ref=e709]:
+      - strong [ref=e710]: hermosa
+      - text: 56 veces
+    - article [ref=e711]:
+      - strong [ref=e712]: tranquila
+      - text: 44 veces
+    - article [ref=e713]:
+      - strong [ref=e714]: besitos
+      - text: 35 veces
+    - article [ref=e715]:
+      - strong [ref=e716]: preciosa
+      - text: 27 veces
+    - article [ref=e717]:
+      - strong [ref=e718]: divina
+      - text: 5 veces
+    - article [ref=e719]:
+      - strong [ref=e720]: abrazos
+      - text: 1 veces
+  - generic [ref=e725]:
+    - heading "Estos datos no son solo numeros." [level=2] [ref=e727]:
+      - text: Estos datos no son solo numeros.
+      - generic [ref=e728]:
+        - link "Link to heading":
+          - /url: "#estos-datos-no-son-solo-numeros"
+          - img
+    - paragraph [ref=e729]: "Son pedacitos de nosotros: dias, palabras y recuerdos que se quedaron guardados."
+  - generic:
+    - iframe

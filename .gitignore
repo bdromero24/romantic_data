@@ -1,0 +1,28 @@
+# Variables de entorno y secretos
+.env
+.env.*
+!.env.example
+.streamlit/secrets.toml
+
+# Datos sensibles
+data/raw/
+data/staging/
+data/processed/
+*.parquet
+*.csv
+*.xlsx
+*.json
+*.zip
+*.rar
+*.txt
+
+# Logs
+logs/
+*.log
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Streamlit cache
+.streamlit/cache/
