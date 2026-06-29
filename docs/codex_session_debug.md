@@ -1,3 +1,36 @@
+## Modo de datos congelados para Streamlit Cloud
+
+Se agrego modo de datos congelados para despliegue en Streamlit Cloud sin
+PostgreSQL local.
+
+## Ajuste final: promedio, KPI conversacion y pergaminos
+
+### Motivo
+
+La landing necesitaba redondear visualmente el promedio diario, ubicar
+`Quien prendio mas veces la conversacion` junto a `Hater de tiempo completo`
+y hacer que los mensajes destacados se vieran como un unico pergamino.
+
+### Cambio aplicado
+
+- `services/romantic_metrics.py`: `_build_summary_cards()` muestra
+  `Promedio diario` con `_format_rounded_number()` y agrega la card de
+  conversacion como KPI secundario despues de `Hater de tiempo completo`.
+- `app/main.py`: deja de renderizar `render_conversation_starter()` como
+  bloque separado para evitar una fila completa.
+- `ui/styles.py`: `.scroll-quote-card` usa el PNG del pergamino solo como
+  mascara; neutraliza fondo, borde, radio, sombra y blur heredados de
+  `.quote-card`.
+- `ui/styles.py`: `.scroll-quote-card::before` dibuja la silueta/borde fucsia
+  y `::after` dibuja el relleno translucido para eliminar el blanco del asset
+  y mantener uniformidad con las demas cards.
+
+### Verificacion
+
+```powershell
+.\venv\Scripts\python.exe -m pytest tests/test_ui_components.py tests/test_romantic_metrics.py
+```
+
 ## Bug 4: HTML renderizado como texto plano en tarjetas
 
 ## Ajuste KPIs: tipografia, orden y promedio diario

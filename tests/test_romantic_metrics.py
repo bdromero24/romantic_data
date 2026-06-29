@@ -184,7 +184,7 @@ def test_get_romantic_landing_metrics_builds_story_data(monkeypatch) -> None:
     assert result["summary_cards"][3]["label"] == "Dias hablando"
     assert result["summary_cards"][4] == {
         "label": "Promedio diario",
-        "value": "26,7",
+        "value": "27",
         "description": "mensajes al dia entre los dos.",
         "size": "small",
     }
@@ -194,6 +194,12 @@ def test_get_romantic_landing_metrics_builds_story_data(monkeypatch) -> None:
         "label": "Hater de tiempo completo",
         "value": "odio",
         "description": "Utilizaste la palabra odio 11 veces",
+        "size": "small",
+    }
+    assert result["summary_cards"][10] == {
+        "label": "Quien inició mas veces la conversacion",
+        "value": "Mar",
+        "description": "12 dias iniciando la conversacion.",
         "size": "small",
     }
     assert result["hater_full_time"] == {

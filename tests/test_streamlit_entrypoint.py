@@ -68,11 +68,6 @@ def test_run_app_skips_featured_quotes_section_when_empty(monkeypatch) -> None:
     )
     monkeypatch.setattr(app_main, "render_hero", lambda _hero: None)
     monkeypatch.setattr(app_main, "render_metric_cards", lambda _cards: None)
-    monkeypatch.setattr(
-        app_main,
-        "render_conversation_starter",
-        lambda _starter: None,
-    )
     monkeypatch.setattr(app_main, "render_rhythm_charts", lambda _rhythm: None)
     monkeypatch.setattr(
         app_main,
@@ -98,3 +93,51 @@ def test_run_app_skips_featured_quotes_section_when_empty(monkeypatch) -> None:
 
     assert app_main.ROMANTIC_CONTENT["featured_quotes"]["title"] not in section_titles
     assert quote_calls == []
+
+
+def test_parse_bool_config_accepts_expected_values() -> None:
+    for value in ("true", "True", "TRUE", "1", "yes", "y"):
+        assert app_main._parse_bool_config(value) is True
+
+    for value in ("false", "False", "FALSE", "0", "no", "n"):
+        assert app_main._parse_bool_config(value, default=True) is False
+
+
+def test_get_landing_data_uses_static_loader_when_enabled(monkeypatch) -> None:
+    database_calls: list[str] = []
+    static_data = {"hero": {"title": "Static"}}
+
+    monkeypatch.setattr(app_main, "use_static_data", lambda: True)
+    monkeypatch.setattr(
+        app_main,
+        "load_static_landing_data",
+        lambda: static_data,
+    )
+    monkeypatch.setattr(
+        app_main,
+        "get_romantic_landing_metrics",
+        lambda: database_calls.append("database") or {},
+    )
+
+    assert app_main.get_landing_data() == static_data
+    assert database_calls == []
+
+
+def test_get_landing_data_uses_database_when_static_disabled(monkeypatch) -> None:
+    database_data = {"hero": {"title": "Database"}}
+    static_calls: list[str] = []
+
+    monkeypatch.setattr(app_main, "use_static_data", lambda: False)
+    monkeypatch.setattr(
+        app_main,
+        "load_static_landing_data",
+        lambda: static_calls.append("static") or {},
+    )
+    monkeypatch.setattr(
+        app_main,
+        "get_romantic_landing_metrics",
+        lambda: database_data,
+    )
+
+    assert app_main.get_landing_data() == database_data
+    assert static_calls == []

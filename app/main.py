@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 import sys
+import os
 from pathlib import Path
+from typing import Any
+
 import streamlit as st
 
 
@@ -19,10 +22,10 @@ ensure_project_root_on_path()
 
 from app.content_config import ROMANTIC_CONTENT
 from services.romantic_metrics import get_romantic_landing_metrics
+from services.static_landing_data import load_static_landing_data
 from ui.charts import render_rhythm_charts
 from ui.components import (
     render_closing,
-    render_conversation_starter,
     render_hero,
     render_metric_cards,
     render_quotes,
@@ -36,6 +39,51 @@ from ui.error_boundary import log_app_exception, render_safe_error_message
 from ui.styles import CUSTOM_CSS
 
 
+TRUE_VALUES = {"true", "1", "yes", "y"}
+FALSE_VALUES = {"false", "0", "no", "n"}
+
+
+def _parse_bool_config(value: Any, default: bool = False) -> bool:
+    """Parse common boolean text values from secrets or environment."""
+    if isinstance(value, bool):
+        return value
+    if value is None:
+        return default
+
+    normalized_value = str(value).strip().lower()
+    if normalized_value in TRUE_VALUES:
+        return True
+    if normalized_value in FALSE_VALUES:
+        return False
+
+    return default
+
+
+def _get_streamlit_secret(name: str) -> Any | None:
+    """Return a Streamlit secret value when secrets are configured."""
+    try:
+        return st.secrets.get(name)
+    except (AttributeError, FileNotFoundError, KeyError, RuntimeError):
+        return None
+
+
+def use_static_data() -> bool:
+    """Return whether the app should load frozen landing data."""
+    secret_value = _get_streamlit_secret("USE_STATIC_DATA")
+    if secret_value is not None:
+        return _parse_bool_config(secret_value)
+
+    return _parse_bool_config(os.getenv("USE_STATIC_DATA"))
+
+
+def get_landing_data() -> dict[str, Any]:
+    """Load landing data from the configured source."""
+    if use_static_data():
+        return load_static_landing_data()
+
+    return get_romantic_landing_metrics()
+
+
 def run_app() -> None:
     """Render the romantic Streamlit landing."""
     st.set_page_config(
@@ -45,7 +93,7 @@ def run_app() -> None:
     )
     st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
 
-    landing_data = get_romantic_landing_metrics()
+    landing_data = get_landing_data()
 
     render_hero(landing_data["hero"])
     render_section_header(
@@ -54,7 +102,6 @@ def run_app() -> None:
         copy="Recuerdos de todo lo que hemos compartido.",
     )
     render_metric_cards(landing_data["summary_cards"])
-    render_conversation_starter(landing_data["conversation_starter"])
 
     render_section_header(
         kicker="Nuestro ritmo",

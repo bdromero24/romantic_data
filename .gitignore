@@ -12,6 +12,8 @@ data/processed/
 *.csv
 *.xlsx
 *.json
+!data/final/
+!data/final/landing_data.json
 *.zip
 *.rar
 *.txt
