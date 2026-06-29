@@ -61,7 +61,7 @@ FEATURED_PATTERNS: tuple[str, ...] = (
     r"\mme\s+siento\s+muy\s+amada\M",
     r"\mme\s+gusta\M",
     r"\mbesitos\M",
-    r"\mabrazos?\M",
+    r"\mabraces?\M",
     r"\mtranquila\M",
     r"\mmi\s+amor\M",
     r"\mmi\s+vida\M",
@@ -97,6 +97,9 @@ def get_romantic_landing_metrics() -> dict[str, Any]:
         peak_month = fetch_peak_month()
         favorite_hour = fetch_favorite_hour()
         conversation_starter = fetch_conversation_starter()
+        formatted_conversation_starter = _format_conversation_starter(
+            conversation_starter
+        )
         average_daily_messages = fetch_average_daily_messages()
         hater_full_time = _build_hater_full_time_card(
             count_hater_word_occurrences(HER_SENDER_NAME)
@@ -113,6 +116,7 @@ def get_romantic_landing_metrics() -> dict[str, Any]:
                 romantic_words=romantic_words,
                 hater_full_time=hater_full_time,
                 average_daily_messages=average_daily_messages,
+                conversation_starter=formatted_conversation_starter,
             ),
             "hater_full_time": hater_full_time,
             "phrase_counts": phrase_counts,
@@ -135,9 +139,7 @@ def get_romantic_landing_metrics() -> dict[str, Any]:
                     fetch_sender_rhythm(CHARTS_MAX_DATE)
                 ),
             },
-            "conversation_starter": _format_conversation_starter(
-                conversation_starter
-            ),
+            "conversation_starter": formatted_conversation_starter,
         }
     except Exception as error:
         log_critical_error(
@@ -183,6 +185,7 @@ def _build_summary_cards(
     romantic_words: list[dict[str, str]],
     hater_full_time: dict[str, str],
     average_daily_messages: float,
+    conversation_starter: dict[str, str],
 ) -> list[dict[str, str]]:
     counts_by_key = {
         phrase_count["key"]: phrase_count["count"]
@@ -222,7 +225,7 @@ def _build_summary_cards(
         },
         {
             "label": "Promedio diario",
-            "value": _format_decimal(average_daily_messages),
+            "value": _format_rounded_number(average_daily_messages),
             "description": "mensajes al dia entre los dos.",
             "size": "small",
         },
@@ -259,6 +262,12 @@ def _build_summary_cards(
             "label": hater_full_time["title"],
             "value": hater_full_time["keyword"],
             "description": hater_full_time["description"],
+            "size": "small",
+        },
+        {
+            "label": "Quien inició mas veces la conversacion",
+            "value": conversation_starter["sender"],
+            "description": conversation_starter["detail"],
             "size": "small",
         },
     ]
@@ -722,6 +731,13 @@ def _format_decimal(value: Any) -> str:
         return _format_number(number)
 
     return f"{number:.1f}".replace(".", ",")
+
+
+def _format_rounded_number(value: Any) -> str:
+    try:
+        return _format_number(round(float(value or 0)))
+    except (TypeError, ValueError):
+        return "0"
 
 
 def _format_hour(value: Any) -> str:

@@ -359,49 +359,61 @@ div {
 .scroll-quote-card {
   position: relative;
   min-height: 12rem;
-  padding: 2.4rem 1.8rem;
+  padding: 2.65rem 2rem;
   overflow: hidden;
-  background-image:
-    linear-gradient(135deg, rgba(255, 246, 251, 0.76), rgba(255, 240, 248, 0.64)),
-    var(--scroll-bg-image, linear-gradient(135deg, rgba(255, 246, 251, 0.96), rgba(255, 226, 242, 0.88))),
-    radial-gradient(circle at top left, rgba(255, 255, 255, 0.94), transparent 42%),
-    radial-gradient(circle at bottom right, rgba(255, 179, 217, 0.34), transparent 44%),
-    linear-gradient(135deg, rgba(255, 246, 251, 0.96), rgba(255, 226, 242, 0.88));
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
-  border: 1px solid rgba(255, 95, 183, 0.38);
-  border-radius: 26px 18px 26px 18px;
-  box-shadow:
-    0 18px 38px rgba(212, 20, 114, 0.14),
-    0 0 0 1px rgba(255, 255, 255, 0.48),
-    inset 0 0 28px rgba(255, 255, 255, 0.56);
+  background-color: transparent;
+  background-image: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  filter:
+    drop-shadow(0 18px 42px rgba(212, 20, 114, 0.16))
+    drop-shadow(0 8px 18px rgba(63, 36, 53, 0.06));
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
 }
 
 .scroll-quote-card::before,
 .scroll-quote-card::after {
   content: "";
   position: absolute;
-  left: 1.1rem;
-  right: 1.1rem;
-  height: 0.72rem;
-  border: 1px solid rgba(255, 95, 183, 0.18);
-  border-radius: 999px;
-  background:
-    linear-gradient(90deg, rgba(255, 255, 255, 0.56), rgba(255, 95, 183, 0.20)),
-    linear-gradient(180deg, rgba(255, 246, 251, 0.92), rgba(255, 179, 217, 0.32));
-  box-shadow:
-    0 4px 12px rgba(212, 20, 114, 0.10),
-    inset 0 1px 0 rgba(255, 255, 255, 0.72);
   pointer-events: none;
+  -webkit-mask-image: var(--scroll-bg-image, none);
+  mask-image: var(--scroll-bg-image, none);
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
 }
 
 .scroll-quote-card::before {
-  top: 0.65rem;
+  inset: 0;
+  z-index: 0;
+  background:
+    linear-gradient(135deg, rgba(255, 95, 183, 0.98), rgba(169, 0, 88, 0.88)),
+    radial-gradient(circle at 18% 12%, rgba(255, 255, 255, 0.54), transparent 36%);
 }
 
 .scroll-quote-card::after {
-  bottom: 0.65rem;
+  inset: 4px;
+  z-index: 0;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.52), rgba(255, 240, 248, 0.48)),
+    radial-gradient(circle at 24% 20%, rgba(255, 255, 255, 0.54), transparent 34%),
+    radial-gradient(circle at 82% 78%, rgba(255, 95, 183, 0.20), transparent 38%),
+    linear-gradient(135deg, rgba(255, 246, 251, 0.54), rgba(255, 214, 236, 0.42));
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+}
+
+.scroll-quote-card:hover {
+  border-color: transparent;
+  box-shadow: none;
+  filter:
+    drop-shadow(0 24px 58px rgba(212, 20, 114, 0.22))
+    drop-shadow(0 0 0 rgba(255, 95, 183, 0.22));
 }
 
 .scroll-quote-card .quote-text,

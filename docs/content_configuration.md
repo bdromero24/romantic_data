@@ -196,10 +196,16 @@ El asset usado para el pergamino queda en:
 ui/assets/perrgamino.png
 ```
 
-El efecto pergamino se controla en `ui/styles.py` con `.scroll-quote-card` y
-sus pseudo-elementos `::before` y `::after`. Para ajustar el efecto, cambia
-solo esos selectores: `background-image`, fondos `linear-gradient`, borde,
-sombra, radio, padding y barras decorativas superior/inferior.
+El efecto pergamino se controla en `ui/styles.py` con `.scroll-quote-card`.
+La clase usa `--scroll-bg-image` solo como mascara del contenedor. El PNG no
+se pinta como imagen visible, para evitar el fondo blanco propio del asset.
+`::before` dibuja la silueta/borde fucsia y `::after` dibuja el relleno
+translucido con la misma paleta de los demas contenedores.
+
+El fondo rectangular heredado de `.quote-card` queda neutralizado con
+`background-color: transparent`, `background-image: none`, `border: 0`,
+`border-radius: 0`, `box-shadow: none` y sin `backdrop-filter` en el elemento
+principal.
 
 Los IDs y la logica de carga no dependen de este estilo.
 
@@ -268,7 +274,11 @@ Mes mas intenso
 ```
 
 El grid visual se controla en `ui/styles.py` con `.bento-grid`,
-`.bento-card`, `.bento-card.large` y `.bento-card.full`.
+`.bento-card`, `.bento-card.large` y `.bento-card.full`. La card
+`Quien prendio mas veces la conversacion` se arma como KPI secundario en
+`services/romantic_metrics.py` dentro de `_build_summary_cards()` para quedar
+en la misma grilla, a la derecha de `Hater de tiempo completo` cuando el
+ancho disponible lo permite.
 
 ### Promedio diario
 
@@ -281,6 +291,11 @@ db/romantic_queries.py -> fetch_average_daily_messages()
 
 La query agrupa mensajes validos por dia calendario y calcula
 `AVG(total_messages)`, considerando ambos sender.
+
+El valor de UI se redondea en `services/romantic_metrics.py` con
+`_format_rounded_number()` dentro de `_build_summary_cards()`. El calculo
+interno puede seguir siendo decimal, pero la card renderizada por
+`ui/components.py` muestra un entero.
 
 Verificacion visual recomendada:
 
