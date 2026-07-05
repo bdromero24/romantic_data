@@ -3,11 +3,6 @@ name: Keep Streamlit app awake with Playwright
 on:
   schedule:
     # Cada 6 horas en UTC.
-    # Colombia UTC-5 aprox:
-    # 01:23 UTC = 20:23 Colombia
-    # 07:23 UTC = 02:23 Colombia
-    # 13:23 UTC = 08:23 Colombia
-    # 19:23 UTC = 14:23 Colombia
     - cron: "23 */6 * * *"
 
   workflow_dispatch:
@@ -15,7 +10,7 @@ on:
 jobs:
   wake-streamlit:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 12
 
     steps:
       - name: Set up Python
@@ -29,13 +24,15 @@ jobs:
           python -m pip install playwright
           python -m playwright install --with-deps chromium
 
-      - name: Visit Streamlit app
+      - name: Visit and wake Streamlit app
         env:
           STREAMLIT_APP_URL: ${{ secrets.STREAMLIT_APP_URL }}
         run: |
           python - <<'PY'
           import os
+          import re
           import sys
+          from pathlib import Path
           from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeoutError
 
           url = os.environ.get("STREAMLIT_APP_URL")
@@ -44,68 +41,137 @@ jobs:
               print("ERROR: STREAMLIT_APP_URL secret is not configured.")
               sys.exit(1)
 
+          # Textos propios de la landing. Si alguno aparece, asumimos que la app real cargó.
+          APP_MARKERS = [
+              "Nuestra historia",
+              "Pequeños datos bonitos",
+              "Mensajes para volver a leer despacio",
+              "Nuestro ritmo",
+          ]
+
+          WAKE_TEXT_PATTERNS = [
+              re.compile(r"wake up", re.I),
+              re.compile(r"yes,\s*get this app back up", re.I),
+              re.compile(r"get this app back up", re.I),
+              re.compile(r"this app is asleep", re.I),
+              re.compile(r"this app has gone to sleep", re.I),
+          ]
+
+          def page_has_app_marker(page) -> bool:
+              try:
+                  body_text = page.locator("body").inner_text(timeout=10000)
+              except Exception:
+                  body_text = ""
+
+              for marker in APP_MARKERS:
+                  if marker.lower() in body_text.lower():
+                      print(f"App marker found: {marker}")
+                      return True
+
+              print("No app marker found yet.")
+              print("Body preview:")
+              print(body_text[:1200])
+              return False
+
+          def try_click_wake_control(page) -> bool:
+              # Primero intenta botones visibles.
+              button_selectors = [
+                  "button:has-text('Wake up')",
+                  "button:has-text('Yes, get this app back up!')",
+                  "button:has-text('Get this app back up')",
+                  "text=Yes, get this app back up!",
+                  "text=Get this app back up",
+                  "text=Wake up",
+              ]
+
+              for selector in button_selectors:
+                  try:
+                      locator = page.locator(selector)
+                      count = locator.count()
+                      if count > 0:
+                          print(f"Wake control found by selector: {selector}")
+                          locator.first.click(timeout=15000)
+                          return True
+                  except Exception as exc:
+                      print(f"Selector failed/skipped: {selector} | {exc}")
+
+              # Luego revisa texto de body para diagnosticar.
+              try:
+                  body_text = page.locator("body").inner_text(timeout=10000)
+              except Exception:
+                  body_text = ""
+
+              for pattern in WAKE_TEXT_PATTERNS:
+                  if pattern.search(body_text):
+                      print(f"Wake-related text detected: {pattern.pattern}")
+                      return False
+
+              return False
+
+          screenshots_dir = Path("artifacts")
+          screenshots_dir.mkdir(exist_ok=True)
+
           print(f"Opening Streamlit app: {url}")
 
           with sync_playwright() as p:
               browser = p.chromium.launch(headless=True)
               page = browser.new_page(
-                  viewport={"width": 1440, "height": 1200},
+                  viewport={"width": 1440, "height": 1400},
                   user_agent=(
                       "Mozilla/5.0 (X11; Linux x86_64) "
                       "AppleWebKit/537.36 (KHTML, like Gecko) "
-                      "Chrome/120.0.0.0 Safari/537.36 "
-                      "github-actions-streamlit-keepalive"
+                      "Chrome/120.0.0.0 Safari/537.36"
                   ),
               )
 
               try:
                   page.goto(url, wait_until="domcontentloaded", timeout=120000)
-                  print("Initial page loaded.")
+                  page.wait_for_timeout(5000)
 
-                  # Streamlit Community Cloud puede mostrar pantalla/boton de wake-up.
-                  wake_selectors = [
-                      "button:has-text('Wake up')",
-                      "button:has-text('Yes, get this app back up!')",
-                      "button:has-text('Get this app back up')",
-                      "text=Yes, get this app back up!",
-                      "text=Wake up",
-                  ]
+                  for attempt in range(1, 5):
+                      print(f"Attempt {attempt}/4")
 
-                  for selector in wake_selectors:
+                      if page_has_app_marker(page):
+                          print("Streamlit app is awake and real landing content is visible.")
+                          page.screenshot(path="artifacts/streamlit-awake-success.png", full_page=True)
+                          browser.close()
+                          sys.exit(0)
+
+                      clicked = try_click_wake_control(page)
+
+                      if clicked:
+                          print("Wake button clicked. Waiting for app to start...")
+                          page.wait_for_timeout(45000)
+                      else:
+                          print("No clickable wake button found. Waiting and reloading...")
+                          page.wait_for_timeout(30000)
+
                       try:
-                          locator = page.locator(selector)
-                          if locator.count() > 0:
-                              print(f"Wake-up control found: {selector}")
-                              locator.first.click(timeout=10000)
-                              page.wait_for_timeout(20000)
-                              break
-                      except Exception as exc:
-                          print(f"Selector skipped: {selector} | {exc}")
+                          page.reload(wait_until="domcontentloaded", timeout=120000)
+                      except PlaywrightTimeoutError:
+                          print("Reload timeout ignored; continuing.")
 
-                  # Espera adicional para que Streamlit levante sesión/websocket.
-                  try:
-                      page.wait_for_load_state("networkidle", timeout=60000)
-                  except PlaywrightTimeoutError:
-                      print("networkidle timeout ignored; continuing.")
+                      try:
+                          page.wait_for_load_state("networkidle", timeout=60000)
+                      except PlaywrightTimeoutError:
+                          print("networkidle timeout ignored; continuing.")
 
-                  page.wait_for_timeout(15000)
+                      page.wait_for_timeout(10000)
 
-                  title = page.title()
-                  content = page.content()
-
-                  print(f"Page title: {title}")
+                  print("ERROR: App marker was not found after wake attempts.")
                   print(f"Final URL: {page.url}")
-                  print(f"HTML length: {len(content)}")
+                  print(f"Title: {page.title()}")
 
-                  if "ModuleNotFoundError" in content or "Traceback" in content:
-                      print("ERROR: App appears to show a Python traceback.")
-                      sys.exit(1)
-
-                  if len(content) < 1000:
-                      print("WARNING: Page content seems unusually short.")
-
-                  print("Streamlit app visited successfully.")
+                  page.screenshot(path="artifacts/streamlit-awake-failed.png", full_page=True)
+                  sys.exit(1)
 
               finally:
                   browser.close()
           PY
+
+      - name: Upload wake screenshot
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: streamlit-wake-debug
+          path: artifacts/
