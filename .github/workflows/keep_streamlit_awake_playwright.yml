@@ -1,0 +1,111 @@
+name: Keep Streamlit app awake with Playwright
+
+on:
+  schedule:
+    # Cada 6 horas en UTC.
+    # Colombia UTC-5 aprox:
+    # 01:23 UTC = 20:23 Colombia
+    # 07:23 UTC = 02:23 Colombia
+    # 13:23 UTC = 08:23 Colombia
+    # 19:23 UTC = 14:23 Colombia
+    - cron: "23 */6 * * *"
+
+  workflow_dispatch:
+
+jobs:
+  wake-streamlit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Playwright
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install playwright
+          python -m playwright install --with-deps chromium
+
+      - name: Visit Streamlit app
+        env:
+          STREAMLIT_APP_URL: ${{ secrets.STREAMLIT_APP_URL }}
+        run: |
+          python - <<'PY'
+          import os
+          import sys
+          from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeoutError
+
+          url = os.environ.get("STREAMLIT_APP_URL")
+
+          if not url:
+              print("ERROR: STREAMLIT_APP_URL secret is not configured.")
+              sys.exit(1)
+
+          print(f"Opening Streamlit app: {url}")
+
+          with sync_playwright() as p:
+              browser = p.chromium.launch(headless=True)
+              page = browser.new_page(
+                  viewport={"width": 1440, "height": 1200},
+                  user_agent=(
+                      "Mozilla/5.0 (X11; Linux x86_64) "
+                      "AppleWebKit/537.36 (KHTML, like Gecko) "
+                      "Chrome/120.0.0.0 Safari/537.36 "
+                      "github-actions-streamlit-keepalive"
+                  ),
+              )
+
+              try:
+                  page.goto(url, wait_until="domcontentloaded", timeout=120000)
+                  print("Initial page loaded.")
+
+                  # Streamlit Community Cloud puede mostrar pantalla/boton de wake-up.
+                  wake_selectors = [
+                      "button:has-text('Wake up')",
+                      "button:has-text('Yes, get this app back up!')",
+                      "button:has-text('Get this app back up')",
+                      "text=Yes, get this app back up!",
+                      "text=Wake up",
+                  ]
+
+                  for selector in wake_selectors:
+                      try:
+                          locator = page.locator(selector)
+                          if locator.count() > 0:
+                              print(f"Wake-up control found: {selector}")
+                              locator.first.click(timeout=10000)
+                              page.wait_for_timeout(20000)
+                              break
+                      except Exception as exc:
+                          print(f"Selector skipped: {selector} | {exc}")
+
+                  # Espera adicional para que Streamlit levante sesión/websocket.
+                  try:
+                      page.wait_for_load_state("networkidle", timeout=60000)
+                  except PlaywrightTimeoutError:
+                      print("networkidle timeout ignored; continuing.")
+
+                  page.wait_for_timeout(15000)
+
+                  title = page.title()
+                  content = page.content()
+
+                  print(f"Page title: {title}")
+                  print(f"Final URL: {page.url}")
+                  print(f"HTML length: {len(content)}")
+
+                  if "ModuleNotFoundError" in content or "Traceback" in content:
+                      print("ERROR: App appears to show a Python traceback.")
+                      sys.exit(1)
+
+                  if len(content) < 1000:
+                      print("WARNING: Page content seems unusually short.")
+
+                  print("Streamlit app visited successfully.")
+
+              finally:
+                  browser.close()
+          PY
