@@ -338,3 +338,5 @@ HER_SENDER_NAME = "sender value stored in messages.sender"
 
 The `Hater de tiempo completo` card counts real occurrences of the whole words
 `odio` and `hate` in her valid `message_normalized` messages.
+
+

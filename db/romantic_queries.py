@@ -17,6 +17,7 @@ from db.queries import (
     ROMANTIC_HATER_WORD_COUNT_QUERY,
     ROMANTIC_HOURLY_RHYTHM_QUERY,
     ROMANTIC_MESSAGE_BY_ID_QUERY,
+    ROMANTIC_MESSAGE_BY_KEY_QUERY,
     ROMANTIC_MONTHLY_RHYTHM_QUERY,
     ROMANTIC_PATTERN_COUNT_QUERY,
     ROMANTIC_PATTERN_MESSAGES_QUERY,
@@ -25,6 +26,7 @@ from db.queries import (
     ROMANTIC_SENDER_RHYTHM_QUERY,
     ROMANTIC_SUMMARY_QUERY,
     ROMANTIC_MESSAGES_BY_IDS_QUERY,
+    ROMANTIC_MESSAGES_BY_KEYS_QUERY,
     ROMANTIC_WEEKDAY_RHYTHM_QUERY,
     ROMANTIC_WORD_COUNTS_QUERY,
 )
@@ -57,6 +59,16 @@ def fetch_message_by_id(message_id: int) -> dict[str, Any] | None:
     )
 
 
+def fetch_message_by_key(message_key: str) -> dict[str, Any] | None:
+    """Return one valid stored message by deterministic message key."""
+    parameters = {"message_key": _validate_message_key(message_key)}
+    return _fetch_optional_one_dict(
+        ROMANTIC_MESSAGE_BY_KEY_QUERY,
+        "fetch_message_by_key",
+        parameters,
+    )
+
+
 def fetch_messages_by_ids(message_ids: list[int]) -> list[dict[str, Any]]:
     """Return valid stored messages by IDs preserving the input order."""
     valid_message_ids = _validate_message_ids(message_ids)
@@ -73,6 +85,25 @@ def fetch_messages_by_ids(message_ids: list[int]) -> list[dict[str, Any]]:
         records_by_id[message_id]
         for message_id in valid_message_ids
         if message_id in records_by_id
+    ]
+
+
+def fetch_messages_by_keys(message_keys: list[str]) -> list[dict[str, Any]]:
+    """Return valid stored messages by keys preserving the input order."""
+    valid_message_keys = _validate_message_keys(message_keys)
+    if not valid_message_keys:
+        return []
+
+    rows = _fetch_all_dicts(
+        ROMANTIC_MESSAGES_BY_KEYS_QUERY,
+        "fetch_messages_by_keys",
+        {"message_keys": valid_message_keys},
+    )
+    records_by_key = {row["message_key"]: row for row in rows}
+    return [
+        records_by_key[message_key]
+        for message_key in valid_message_keys
+        if message_key in records_by_key
     ]
 
 
@@ -299,6 +330,26 @@ def _validate_message_ids(message_ids: list[int]) -> list[int]:
         valid_message_ids.append(_validate_message_id(message_id))
 
     return valid_message_ids
+
+
+def _validate_message_key(message_key: str) -> str:
+    if not isinstance(message_key, str) or not message_key.strip():
+        raise ValueError("Romantic message key must be a non-empty string.")
+
+    return message_key.strip()
+
+
+def _validate_message_keys(message_keys: list[str]) -> list[str]:
+    if not isinstance(message_keys, list):
+        raise TypeError("Romantic message keys must be a list.")
+
+    valid_message_keys: list[str] = []
+    for message_key in message_keys:
+        if message_key is None:
+            continue
+        valid_message_keys.append(_validate_message_key(message_key))
+
+    return valid_message_keys
 
 
 def _log_query_error(

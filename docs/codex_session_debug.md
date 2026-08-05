@@ -3,6 +3,31 @@
 Se agrego modo de datos congelados para despliegue en Streamlit Cloud sin
 PostgreSQL local.
 
+## Featured quotes como cartas desbloqueables
+
+Se actualizo la seccion featured quotes para renderizar mensajes como
+cartas/sobres desbloqueables con interaccion hover/click.
+
+### Cambio aplicado
+
+- `ui/components.py`: `build_quote_cards_html()` renderiza cada mensaje con
+  estructura `love-letter-card`, frente de sobre cerrado y reverso con mensaje,
+  sender y fecha.
+- `ui/components.py`: `render_love_letter_unlocker()` inyecta el handler de
+  click/tap y teclado para dejar abierta la carta.
+- `ui/styles.py`: se agregaron estilos `love-letter-*` para grilla, flip,
+  sobre, sello de corazon y reverso tipo papel rosado.
+- `docs/content_configuration.md`: se documento que `featured_quotes` conserva
+  la misma fuente de datos y cambia solo la presentacion visual.
+
+### Verificacion
+
+```powershell
+.\venv\Scripts\python.exe -m pytest tests/test_ui_components.py
+$env:USE_STATIC_DATA="true"
+streamlit run app/main.py
+```
+
 ## Ajuste final: promedio, KPI conversacion y pergaminos
 
 ### Motivo
@@ -841,6 +866,63 @@ Resultado:
 16 passed
 ```
 
+## SpotifyCapsule 8-bit neon
+
+### Cambio aplicado
+
+- `ui/spotify_capsule.py`: nuevo componente HTML/CSS/JS autocontenido con
+  player tipo capsula neon 8-bit, trigger `Nuestra cancion`, play/pause,
+  saltos `-5s` y `+5s`, progreso, waveform visual, frases sincronizadas y
+  fallback si faltan assets.
+- `app/content_config.py`: nueva configuracion
+  `ROMANTIC_CONTENT["spotify_capsule"]` con titulo, artista, rutas relativas,
+  segundo inicial, duracion y frases manuales.
+- `app/main.py`: render opcional de la seccion, sin afectar el modo
+  `USE_STATIC_DATA=true`.
+- `tests/test_spotify_capsule.py`: pruebas de assets base64, fallbacks,
+  serializacion segura y render con `streamlit.components.v1.html`.
+- `tests/test_streamlit_entrypoint.py`: pruebas del flag `enabled`.
+
+### Assets esperados
+
+```text
+ui/assets/audio/mujer_amante_fragment.mp3
+ui/assets/images/spotify_capsule_cover.png
+```
+
+Si esos archivos no existen, la landing no falla: el audio queda pendiente y
+la portada usa placeholder visual.
+
+### Configuracion rapida
+
+```python
+"start_time_seconds": 45,
+"duration_seconds": 45,
+"lyrics_data": [
+    {"time": 45, "text": "Frase breve manual."},
+]
+```
+
+Para desactivar:
+
+```python
+"enabled": False
+```
+
+### Advertencia
+
+No subir audio sensible, privado o sin autorizacion a un repositorio publico.
+No pegar letras completas protegidas por copyright; usar frases cortas o texto
+personalizado configurado manualmente.
+
+### Verificacion recomendada
+
+```powershell
+.\venv\Scripts\python.exe -m pytest tests/test_spotify_capsule.py tests/test_streamlit_entrypoint.py
+$env:USE_STATIC_DATA="true"
+streamlit run app/main.py
+```
+
 ## Correccion de parsing de fechas en ETL
 
 ### Problema
@@ -899,8 +981,82 @@ Procedimiento recomendado:
    artefacto transformado.
 6. Revisar las consultas no destructivas agregadas en `db/queries.sql`.
 
+## SpotifyCapsule carrusel de portadas
+
+### Cambio aplicado
+
+- `ui/spotify_capsule.py`: el componente ahora acepta `cover_image_paths`,
+  filtra imagenes locales inexistentes y serializa las validas como `data:`
+  URI base64. Mantiene compatibilidad con `cover_image_path`.
+- `app/content_config.py`: `ROMANTIC_CONTENT["spotify_capsule"]` conserva la
+  portada actual como primer item y agrega `cover_rotation_seconds = 15`.
+- `tests/test_spotify_capsule.py`: pruebas para carrusel multiple, modo
+  legacy, fallback sin imagenes validas y serializacion segura.
+- `docs/content_configuration.md`: documentacion del carrusel, fallback y
+  verificacion local.
+
+### Assets esperados
+
+```text
+ui/assets/images/spotify_capsule_cover.png
+ui/assets/images/spotify_capsule_cover_2.png
+ui/assets/images/spotify_capsule_cover_3.png
+ui/assets/images/spotify_capsule_cover_4.png
+```
+
+Actualmente solo existe `spotify_capsule_cover.png`. Las rutas faltantes se
+omiten; si no queda ninguna imagen valida, el componente muestra el placeholder
+neon/pixel.
+
+### Verificacion recomendada
+
+```powershell
+.\venv\Scripts\python.exe -m pytest tests/test_spotify_capsule.py tests/test_streamlit_entrypoint.py
+$env:USE_STATIC_DATA="true"
+streamlit run app/main.py
+```
+
 Comando ETL recomendado:
 
 ```powershell
 .\venv\Scripts\python.exe scripts\run_etl.py data\raw\WhatsApp_Chat_with_Mar🍓.txt data\raw\ig_message_1.json data\raw\ig_message_2.json --save-artifacts
 ```
+
+## BirthdayInvitationLetter
+
+Se agrego componente BirthdayInvitationLetter como seccion interactiva posterior a SpotifyCapsule.
+
+## Message key idempotente para mensajes manuales
+
+### Cambio aplicado
+
+- `etl/message_key.py`: agrega `build_message_key()` con SHA-256 sobre
+  `source`, `sender`, `timestamp` ISO y `message_normalized`.
+- `db/schema.sql`: agrega columna nullable `messages.message_key`.
+- `etl/load.py`: calcula `message_key` antes del insert.
+- `db/queries.py`: incluye `message_key` en el INSERT y cambia el conflicto a
+  `DO UPDATE` conservador sobre `message_normalized` y `message_key`.
+- `db/romantic_queries.py`: agrega consultas por `message_key`.
+- `services/romantic_metrics.py`: las referencias manuales prefieren
+  `message_key` y usan `message_id` como fallback.
+- `scripts/backup_configured_messages.py`: exporta backup CSV/JSON de IDs
+  configurados.
+- `scripts/backfill_message_keys.py`: completa `message_key` en registros
+  existentes y crea indice unico solo si no hay duplicados.
+- `scripts/export_content_config_message_keys.py`: exporta mapping para migrar
+  `content_config.py`.
+- `docs/message_key_migration_analysis.md`: documenta analisis, riesgos,
+  UPSERT y orden operativo.
+
+### Orden operativo
+
+```powershell
+python scripts/backup_configured_messages.py
+python scripts/backfill_message_keys.py
+python scripts/export_content_config_message_keys.py
+pytest tests/
+```
+
+No ejecutar `TRUNCATE` ni borrar datos. La recomendacion es usar carga
+incremental/idempotente para conservar IDs y migrar gradualmente de
+`message_id` a `message_key`.

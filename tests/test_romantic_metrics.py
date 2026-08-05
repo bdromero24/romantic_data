@@ -268,6 +268,66 @@ def test_special_message_falls_back_to_first_pattern(monkeypatch) -> None:
     assert result == fallback
 
 
+def test_configured_message_prefers_message_key_over_id(monkeypatch) -> None:
+    key_calls: list[str] = []
+    id_calls: list[int] = []
+    expected = {
+        "id": 2,
+        "message_key": "stable-key",
+        "sender": "Mar",
+        "message": "Por key",
+        "timestamp": datetime(2026, 1, 1, tzinfo=timezone.utc),
+    }
+
+    monkeypatch.setitem(
+        romantic_metrics.ROMANTIC_CONTENT,
+        "first_te_amo",
+        {"message_id": 1, "message_key": "stable-key"},
+    )
+    monkeypatch.setattr(
+        romantic_metrics,
+        "fetch_message_by_key",
+        lambda message_key: key_calls.append(message_key) or expected,
+    )
+    monkeypatch.setattr(
+        romantic_metrics,
+        "fetch_message_by_id",
+        lambda message_id: id_calls.append(message_id) or None,
+    )
+
+    result = romantic_metrics._fetch_configured_message("first_te_amo")
+
+    assert result == expected
+    assert key_calls == ["stable-key"]
+    assert id_calls == []
+
+
+def test_configured_message_falls_back_to_message_id(monkeypatch) -> None:
+    id_calls: list[int] = []
+    expected = {
+        "id": 1,
+        "sender": "Mar",
+        "message": "Por id",
+        "timestamp": datetime(2026, 1, 1, tzinfo=timezone.utc),
+    }
+
+    monkeypatch.setitem(
+        romantic_metrics.ROMANTIC_CONTENT,
+        "first_te_amo",
+        {"message_id": 1},
+    )
+    monkeypatch.setattr(
+        romantic_metrics,
+        "fetch_message_by_id",
+        lambda message_id: id_calls.append(message_id) or expected,
+    )
+
+    result = romantic_metrics._fetch_configured_message("first_te_amo")
+
+    assert result == expected
+    assert id_calls == [1]
+
+
 def test_featured_messages_skip_reserved_ids_in_fallback(monkeypatch) -> None:
     rows = [
         {

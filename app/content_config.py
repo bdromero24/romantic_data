@@ -128,6 +128,148 @@ ROMANTIC_CONTENT: dict[str, Any] = {
         "message_ids": [6180,6190,97,1840,6096,13928,17501,10633,11794],
         "fallback_limit": 5,
     },
+    "spotify_capsule": {
+        "enabled": True,
+        "title": "Mujer Amante",
+        "artist": "Rata Blanca",
+        "badge_text": "La primera cancion que te dediqué",
+        "song_path": "ui/assets/audio/Mujer_amante_fragment.mp3",
+        "cover_image_path": "ui/assets/images/spotify_capsule_cover.png",
+        "cover_image_paths": [
+            "ui/assets/images/spotify_capsule_cover.png",
+            "ui/assets/images/spotify_capsule_cover_2.png",
+            "ui/assets/images/spotify_capsule_cover_3.png",
+            "ui/assets/images/spotify_capsule_cover_4.jpg",
+            "ui/assets/images/spotify_capsule_cover_5.jpg",
+            "ui/assets/images/spotify_capsule_cover_6.jpg",
+        ],
+        "cover_rotation_seconds": 7,
+        "start_time_seconds": 0,
+        "duration_seconds": 70,
+        "lyrics_data": [
+
+            {
+             "time": 0,
+            "text": "Te la dedico una vez mas.",
+            },
+            {
+                "time": 2,
+                "text": "Siento el calor de toda tu piel.",
+            },
+            {
+                "time": 6,
+                "text": "En mi cuerpo otra vez.",
+            },
+            {
+                "time": 10,
+                "text": "Estrella fugaz.",
+            },
+            {
+                "time": 12,
+                "text": "Enciende mi sed.",
+            },
+            {
+                "time": 14,
+                "text": "Misteriosa mujer.",
+            },
+            {
+                "time": 18,
+                "text": "Con tú amor sensual.",
+            },
+            {
+                "time": 22,
+                "text": "Cuánto me das.",
+            },
+            {
+                "time": 26,
+                "text": "Haz que mi sueño.",
+            },
+            {
+                "time": 29,
+                "text": "Sea.",
+            },
+            {
+                "time": 31,
+                "text": "Una verdad.",
+            },
+            {
+                "time": 35,
+                "text": "Dame tú alma hoy.",
+            },
+            {
+                "time": 38,
+                "text": "Haz el ritual.",
+            },
+            {
+                "time": 43,
+                "text": "Llévame al mundo.",
+            },
+            {
+                "time": 45,
+                "text": "Donde.",
+            },
+            {
+                "time": 48,
+                "text": "Pueda soñar.",
+            },
+            {
+                "time": 52,
+                "text": "Uh.",
+            },
+            {
+                "time": 54,
+                "text":"Debo saber si en verdad",
+            },
+            {
+                "time": 57,
+                "text":"En algún lado estás",
+            },
+            {
+                "time": 60,
+                "text":"Voy a buscar",
+            },
+            {
+                "time": 62,
+                "text":"Una señal.",
+            },
+            {
+                "time": 65,
+                "text":"Una canción.",
+            },
+        ],
+    },
+    "birthday_invitation": {
+        "enabled": True,
+        "closed_title": "Nueva carta para ti \U0001f48c",
+        "closed_subtitle": "Toca para abrir tú invitacion",
+        "letter_title": "Amor mio:",
+        "letter_body": [
+            "Tengo una invitación especial para ti.",
+            (
+                "En 1 mes, 1 semana y 5 días cumple años la mujer que amo, es por esa razon, que a esa mujer, le quiero proponer algo que le puede interesar:"
+            ),
+            (
+                "Te invito a pasar tú noche de cumpleaños en un lugar donde tendremos la vista nocturna mas increible de la ciudad"
+            ),
+            (
+                "Hay dos opciones que quiero mostrarte. La idea es que "
+                "escojamos juntos el lugar donde vamos a guardar otro "
+                "recuerdo bonito."
+            ),
+            (
+                "Se que parece loco y tal vez desubicado de mi parte, asi que entiendo si lo primero que piensas es que no se va a poder."
+                "\n\n"
+                "Sin embargo la propuesta esta sobre la mesa y quiero que sea una noche "
+                "pensada para ti, para celebrar tu vida y para recordarte lo "
+                "mucho que te amo."
+            ),
+        ],
+        "signature": "Con amor, David",
+        "primary_link_text": "Ver opcion 1",
+        "primary_link_url": "https://www.instagram.com/reel/Da3LHXnRmyK/?igsh=MTBjeHpheWd4NXF4Mw==",
+        "secondary_link_text": "Ver opcion 2",
+        "secondary_link_url": "https://vt.tiktok.com/ZS4D3soyX/",
+    },
 }
 
 

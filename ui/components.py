@@ -105,6 +105,67 @@ REVEAL_OBSERVER_HTML = """
 </script>
 """
 
+LOVE_LETTER_UNLOCKER_HTML = """
+<script>
+(function () {
+    const rootWindow = window.parent || window;
+    let rootDocument = document;
+
+    try {
+        rootDocument = rootWindow.document || document;
+    } catch (_error) {
+        rootDocument = document;
+    }
+
+    function openCard(card) {
+        card.classList.add("is-open");
+        card.setAttribute("aria-pressed", "true");
+    }
+
+    function bindCards() {
+        rootDocument.querySelectorAll(".love-letter-card").forEach((card) => {
+            if (card.dataset.loveLetterBound === "true") {
+                return;
+            }
+
+            card.dataset.loveLetterBound = "true";
+            card.setAttribute("aria-pressed", "false");
+
+            card.addEventListener("click", () => openCard(card));
+            card.addEventListener("keydown", (event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    openCard(card);
+                }
+            });
+        });
+    }
+
+    bindCards();
+
+    const stateKey = "__romanticLoveLetterUnlocker";
+    if (rootWindow[stateKey]) {
+        rootWindow[stateKey].refresh();
+        return;
+    }
+
+    const mutationObserver = new rootWindow.MutationObserver(() => {
+        rootWindow.requestAnimationFrame(bindCards);
+    });
+
+    mutationObserver.observe(rootDocument.body, {
+        childList: true,
+        subtree: true,
+    });
+
+    rootWindow[stateKey] = {
+        refresh: bindCards,
+        mutationObserver,
+    };
+})();
+</script>
+"""
+
 
 def render_hero(hero: dict[str, str]) -> None:
     """Render the romantic hero."""
@@ -236,6 +297,7 @@ def render_quotes(messages: list[dict[str, str]]) -> None:
         return
 
     _render_html(build_quote_cards_html(messages))
+    render_love_letter_unlocker()
 
 
 def build_quote_cards_html(messages: list[dict[str, str]]) -> str:
@@ -243,17 +305,30 @@ def build_quote_cards_html(messages: list[dict[str, str]]) -> str:
     quote_cards = []
     parchment_data_uri = _build_optional_image_data_uri(PARCHMENT_IMAGE)
     for index, message in enumerate(messages):
+        sender = _escape_value(message.get("sender", ""))
+        date_text = _escape_value(message.get("date", ""))
         quote_cards.append(
             f"""
-            <article class="quote-card scroll-quote-card reveal-on-scroll" {_quote_card_style(index, parchment_data_uri)}>
-              <p class="quote-text">"{_escape_value(message.get("message", ""))}"</p>
-              <div class="quote-sender">{_escape_value(message.get("sender", ""))}</div>
-              <div class="quote-date">{_escape_value(message.get("date", ""))}</div>
+            <article class="love-letter-card reveal-on-scroll" role="button" tabindex="0" aria-label="Abrir mensaje guardado" {_quote_card_style(index, parchment_data_uri)}>
+              <div class="love-letter-inner">
+                <div class="love-letter-front" aria-hidden="true">
+                  <div class="love-letter-envelope">
+                    <div class="love-letter-heart-seal">&hearts;</div>
+                  </div>
+                  <div class="love-letter-closed-title">Mensaje guardado</div>
+                  <div class="love-letter-closed-copy">Toca para abrir</div>
+                </div>
+                <div class="love-letter-back">
+                  <p class="love-letter-message">"{_escape_value(message.get("message", ""))}"</p>
+                  <div class="love-letter-sender">{sender}</div>
+                  <div class="love-letter-date">{date_text}</div>
+                </div>
+              </div>
             </article>
             """
         )
 
-    return f"""<section class="quote-grid">{''.join(quote_cards)}</section>"""
+    return f"""<section class="love-letter-grid">{''.join(quote_cards)}</section>"""
 
 
 def render_special_message(
@@ -389,6 +464,11 @@ def _build_optional_image_data_uri(image_path: Path) -> str:
 def render_reveal_observer() -> None:
     """Inject the reveal-on-scroll observer after the landing HTML exists."""
     streamlit_components.html(REVEAL_OBSERVER_HTML, height=0)
+
+
+def render_love_letter_unlocker() -> None:
+    """Inject click and keyboard behavior for featured quote letters."""
+    streamlit_components.html(LOVE_LETTER_UNLOCKER_HTML, height=0)
 
 
 def _escape_value(value: Any) -> str:

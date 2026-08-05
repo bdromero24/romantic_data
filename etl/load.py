@@ -10,6 +10,7 @@ from sqlalchemy.exc import DatabaseError, ProgrammingError
 
 from db.connection import get_engine
 from db.queries import INSERT_MESSAGE_QUERY
+from etl.message_key import build_message_key
 from logger.logger import log_critical_error
 
 
@@ -34,7 +35,7 @@ def load_messages(records: Iterable[dict[str, Any]]) -> dict[str, int]:
         with engine.begin() as connection:
             for record in validated_records:
                 result = connection.execute(INSERT_MESSAGE_QUERY, record)
-                inserted_count += max(result.rowcount or 0, 0)
+                inserted_count += _count_inserted_rows(result)
 
         return {
             "received": len(validated_records),
@@ -94,7 +95,23 @@ def _validate_record(record: dict[str, Any]) -> dict[str, Any]:
     if not isinstance(record["timestamp"], datetime):
         raise TypeError("Transformed message timestamp must be a datetime.")
 
-    return {field: record[field] for field in REQUIRED_MESSAGE_FIELDS}
+    validated_record = {field: record[field] for field in REQUIRED_MESSAGE_FIELDS}
+    validated_record["message_key"] = build_message_key(validated_record)
+    return validated_record
+
+
+def _count_inserted_rows(result: Any) -> int:
+    fetchone = getattr(result, "fetchone", None)
+    if callable(fetchone):
+        row = fetchone()
+        if row is not None:
+            mapping = getattr(row, "_mapping", None)
+            if mapping is not None and "inserted" in mapping:
+                return 1 if bool(mapping["inserted"]) else 0
+            if isinstance(row, dict) and "inserted" in row:
+                return 1 if bool(row["inserted"]) else 0
+
+    return max(result.rowcount or 0, 0)
 
 
 def _log_load_error(

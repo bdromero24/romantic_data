@@ -5,10 +5,14 @@ CREATE TABLE IF NOT EXISTS messages (
     message TEXT,
     message_normalized TEXT,
     timestamp TIMESTAMPTZ NOT NULL,
+    message_key TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     CONSTRAINT uq_messages_source_sender_message_timestamp
         UNIQUE (source, sender, message, timestamp)
 );
+
+ALTER TABLE messages
+ADD COLUMN IF NOT EXISTS message_key TEXT;
 
 CREATE INDEX IF NOT EXISTS idx_messages_timestamp
     ON messages (timestamp);

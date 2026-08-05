@@ -179,33 +179,40 @@ Si la lista contiene IDs, la app muestra exactamente esos mensajes disponibles, 
 
 El fallback automatico solo se usa cuando `message_ids` esta vacio. Si la lista tiene valores invalidos o IDs inexistentes, esos valores se ignoran de forma segura y no se muestra una seccion vacia con solo titulo.
 
-### Estilo pergamino romantico
+### Cartas desbloqueables
 
 Cada mensaje de esta seccion usa:
 
 ```html
-class="quote-card scroll-quote-card"
+class="love-letter-card"
 ```
 
 La seccion se renderiza desde `ui/components.py` con `render_quotes()` y
 `build_quote_cards_html()`.
 
-El asset usado para el pergamino queda en:
+La seccion sigue alimentandose desde `featured_quotes`, pero visualmente usa
+cartas desbloqueables tipo sobre. Cada card se muestra cerrada como
+`Mensaje guardado` y revela el mensaje, sender y fecha con hover en desktop o
+click/tap en mobile.
+
+Clases principales:
 
 ```text
-ui/assets/perrgamino.png
+.love-letter-grid
+.love-letter-card
+.love-letter-inner
+.love-letter-front
+.love-letter-back
+.love-letter-envelope
+.love-letter-heart-seal
+.love-letter-message
+.love-letter-sender
+.love-letter-date
 ```
 
-El efecto pergamino se controla en `ui/styles.py` con `.scroll-quote-card`.
-La clase usa `--scroll-bg-image` solo como mascara del contenedor. El PNG no
-se pinta como imagen visible, para evitar el fondo blanco propio del asset.
-`::before` dibuja la silueta/borde fucsia y `::after` dibuja el relleno
-translucido con la misma paleta de los demas contenedores.
-
-El fondo rectangular heredado de `.quote-card` queda neutralizado con
-`background-color: transparent`, `background-image: none`, `border: 0`,
-`border-radius: 0`, `box-shadow: none` y sin `backdrop-filter` en el elemento
-principal.
+El comportamiento click/tap se inyecta desde `render_love_letter_unlocker()`
+con `streamlit.components.v1.html()`. El efecto visual se controla en
+`ui/styles.py` con las clases `love-letter-*`.
 
 Los IDs y la logica de carga no dependen de este estilo.
 
@@ -248,6 +255,113 @@ El corazon se inserta solo cuando el label o titulo del card contiene
 El fondo transparente del asset se corrige directamente en
 `ui/assets/corazon.png`; el CSS mantiene `background: transparent`,
 `image-rendering: pixelated` y no agrega contenedores con fondo.
+
+## SpotifyCapsule 8-bit neon
+
+La capsula tipo player neon se configura en:
+
+```python
+ROMANTIC_CONTENT["spotify_capsule"]
+```
+
+El componente se renderiza desde:
+
+```text
+ui/spotify_capsule.py
+```
+
+La integracion controlada vive en:
+
+```text
+app/main.py
+```
+
+Para desactivarlo:
+
+```python
+"spotify_capsule": {
+    "enabled": False,
+}
+```
+
+### Audio e imagen
+
+El fragmento de audio local debe ponerse en:
+
+```text
+ui/assets/audio/Mujer_amante_fragment.mp3
+```
+
+Las portadas locales del carrusel deben ponerse en:
+
+```text
+ui/assets/images/spotify_capsule_cover.png
+ui/assets/images/spotify_capsule_cover_2.png
+ui/assets/images/spotify_capsule_cover_3.png
+ui/assets/images/spotify_capsule_cover_4.png
+```
+
+Las rutas se editan en:
+
+```python
+"song_path": "ui/assets/audio/Mujer_amante_fragment.mp3"
+"cover_image_path": "ui/assets/images/spotify_capsule_cover.png"
+"cover_image_paths": [
+    "ui/assets/images/spotify_capsule_cover.png",
+    "ui/assets/images/spotify_capsule_cover_2.png",
+    "ui/assets/images/spotify_capsule_cover_3.png",
+    "ui/assets/images/spotify_capsule_cover_4.png",
+]
+"cover_rotation_seconds": 15
+```
+
+`cover_image_paths` activa el carrusel automatico. El player cambia a la
+siguiente imagen cada `cover_rotation_seconds` segundos con una transicion
+fade/glow. Si hay una sola imagen valida, se muestra fija y no inicia
+intervalo.
+
+`cover_image_path` se conserva como configuracion legacy para una sola
+portada. Si existe `cover_image_paths`, el componente usa esa lista y omite
+las rutas que no existan. Si no queda ninguna imagen valida, muestra un
+placeholder pixel/neon sin romper la app.
+
+El componente convierte audio e imagenes a `data:` URI base64 para no exponer
+rutas absolutas locales. Si falta el audio, el player muestra un mensaje
+visual y desactiva controles.
+
+No subas al repo publico audio sensible, privado o sin autorizacion. Usa solo
+un fragmento corto proporcionado manualmente y con permiso.
+
+### Inicio y duracion del fragmento
+
+Edita:
+
+```python
+"start_time_seconds": 45,
+"duration_seconds": 45,
+```
+
+Con esa configuracion, el audio empieza en el segundo 45 y se detiene al
+llegar aproximadamente al segundo 90. Los botones `-5s` y `+5s` respetan ese
+rango.
+
+### Frases sincronizadas
+
+Las frases visibles se editan manualmente en:
+
+```python
+"lyrics_data": [
+    {"time": 45, "text": "Frase breve configurada manualmente."},
+    {"time": 52, "text": "Otra frase corta."},
+]
+```
+
+Reglas:
+
+- No generar letras automaticamente.
+- No descargar letras desde internet.
+- No pegar letras completas protegidas por copyright.
+- Usar frases cortas o texto personalizado configurado a mano.
 
 ## KPIs de "Pequenos datos bonitos"
 
@@ -305,11 +419,74 @@ Verificacion visual recomendada:
    desktop.
 4. Confirmar que `Promedio diario` aparece como card secundaria sin overflow.
 
+Verificacion del carrusel SpotifyCapsule:
+
+```powershell
+.\venv\Scripts\python.exe -m pytest tests/test_spotify_capsule.py tests/test_streamlit_entrypoint.py
+$env:USE_STATIC_DATA="true"
+streamlit run app/main.py
+```
+
+Abrir la capsula, confirmar que la primera portada carga y esperar
+`cover_rotation_seconds` para validar el cambio automatico. Si todavia no
+existen `spotify_capsule_cover_2.png`, `spotify_capsule_cover_3.png` o
+`spotify_capsule_cover_4.png`, la app las omite y mantiene la portada valida.
+
+## Message key estable
+
+`message_key` es una llave SHA-256 deterministica construida con:
+
+```text
+source|sender|timestamp_iso|message_normalized
+```
+
+El `id` de `messages` sigue soportado, pero no debe ser la unica referencia a
+largo plazo porque puede cambiar si se reinicia la identidad de la tabla.
+
+Antes de migrar referencias manuales:
+
+```powershell
+python scripts/backup_configured_messages.py
+python scripts/backfill_message_keys.py
+python scripts/export_content_config_message_keys.py
+```
+
+Para obtener `message_key` de un mensaje configurado, usa el CSV generado en:
+
+```text
+data/backups/content_config_message_key_mapping_YYYYMMDD_HHMMSS.csv
+```
+
+Luego agrega `message_key` junto a `message_id`:
+
+```python
+{
+    "message_id": 40210,
+    "message_key": "hash_sha256",
+}
+```
+
+Para listas de mensajes, usa `message_keys` en el mismo orden que
+`message_ids`:
+
+```python
+{
+    "message_ids": [123, 456],
+    "message_keys": ["hash_123", "hash_456"],
+}
+```
+
+La app primero busca por `message_key`; si no existe o no encuentra fila, usa
+`message_id` como fallback.
+
 ## Que ID usar
 
 Usa el valor de la columna `id` de la tabla `messages`.
 
 No uses el numero de fila visual del visor de base de datos, porque ese numero puede cambiar segun filtros, ordenamientos o paginacion.
+
+Para nuevas referencias manuales, conserva el `message_id` como fallback y
+agrega tambien `message_key` despues de ejecutar el backfill.
 
 ## Que pasa si dejo IDs vacios o None
 
@@ -332,6 +509,22 @@ ROMANTIC_CONTENT["featured_quotes"]["message_ids"]
 ```
 
 Cuando `featured_quotes["message_ids"]` esta vacio, el fallback automatico excluye esos IDs reservados para evitar repeticiones en frases bonitas.
+
+## ETL incremental recomendado
+
+No se recomienda hacer `TRUNCATE` sobre `messages`, porque reinicia los IDs y
+puede hacer que la landing renderice mensajes distintos a los configurados.
+
+El flujo recomendado es incremental/idempotente:
+
+```powershell
+python scripts/run_etl.py data/raw/archivo.txt data/raw/archivo.json --save-artifacts
+```
+
+La carga usa `ON CONFLICT (source, sender, message, timestamp) DO UPDATE` para
+insertar mensajes nuevos y completar campos derivados como `message_key` en
+mensajes ya existentes. No actualiza `source`, `sender`, `message`,
+`timestamp`, `id` ni `created_at`.
 
 ## Separador visual de metadata
 
@@ -391,3 +584,65 @@ auto_first_happy_message
 auto_peak_day
 auto_peak_month
 ```
+
+## BirthdayInvitationLetter / Invitacion de cumpleanos
+
+La invitacion interactiva se configura en:
+
+```python
+ROMANTIC_CONTENT["birthday_invitation"]
+```
+
+El componente se renderiza desde:
+
+```text
+ui/birthday_invitation.py
+```
+
+Para activar o desactivar la seccion, edita:
+
+```python
+"enabled": True
+```
+
+Usa `False` para ocultarla sin borrar la configuracion.
+
+Campos editables:
+
+```python
+"closed_title": "Nueva carta para ti \U0001f48c",
+"closed_subtitle": "Toca para abrir tu invitacion",
+"letter_title": "Querida Mar:",
+"letter_body": [
+    "Tengo una invitacion especial para ti.",
+],
+"signature": "Con amor, David",
+"primary_link_text": "Ver opcion 1",
+"primary_link_url": "https://www.tiktok.com/...",
+"secondary_link_text": "Ver opcion 2",
+"secondary_link_url": "https://www.tiktok.com/...",
+```
+
+`letter_body` es una lista de parrafos. Cada item se muestra como un parrafo
+separado dentro de la carta tipo pergamino.
+
+Los dos links de glamping/cabana se cambian en:
+
+```python
+"primary_link_url": "https://www.tiktok.com/...",
+"secondary_link_url": "https://www.tiktok.com/...",
+```
+
+Si un link queda vacio, ese boton no se renderiza. Si ambos links quedan
+vacios, la carta se muestra sin botones y la app no falla.
+
+Verificacion local recomendada:
+
+```powershell
+.\venv\Scripts\python.exe -m pytest tests/test_birthday_invitation.py tests/test_streamlit_entrypoint.py
+$env:USE_STATIC_DATA="true"
+streamlit run app/main.py
+```
+
+El componente no depende de la base de datos, no lee
+`data/final/landing_data.json` y no requiere backend ni APIs externas.

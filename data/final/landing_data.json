@@ -2,13 +2,13 @@
   "hero": {
     "title": "Nuestra historia",
     "subtitle": "Contada con mensajes, recuerdos y pequenos datos bonitos.",
-    "date_range": "16/10/2025 - 21/06/2026",
+    "date_range": "16/10/2025 - 03/08/2026",
     "welcome": "Un pedacito de nosotros, convertido en una pagina para recordar."
   },
   "summary_cards": [
     {
       "label": "Mensajes compartidos",
-      "value": "19.635",
+      "value": "33.238",
       "description": "Cada uno guardando una parte de nuestra historia.",
       "size": "large"
     },
@@ -20,70 +20,70 @@
     },
     {
       "label": "Mes mas intenso",
-      "value": "06/2026",
-      "description": "4.957 mensajes en ese mes.",
+      "value": "07/2026",
+      "description": "10.251 mensajes en ese mes.",
       "size": "large"
     },
     {
       "label": "Dias hablando",
-      "value": "221",
+      "value": "264",
       "description": "Dias en los que nos encontramos en palabras.",
       "size": "small"
     },
     {
       "label": "Promedio diario",
-      "value": "89",
+      "value": "126",
       "description": "mensajes al dia entre los dos.",
       "size": "small"
     },
     {
       "label": "Veces que dijimos te amo",
-      "value": "667",
+      "value": "1.437",
       "description": "Una frase pequena para algo enorme.",
       "size": "small"
     },
     {
       "label": "Veces que dijimos te extraño",
-      "value": "35",
+      "value": "131",
       "description": "Cuando nos hacemos falta.",
       "size": "small"
     },
     {
       "label": "Nuestra hora favorita",
       "value": "22:00",
-      "description": "3.135 mensajes a esa hora.",
+      "description": "4.885 mensajes a esa hora.",
       "size": "small"
     },
     {
       "label": "Palabra bonita mas usada",
       "value": "amor",
-      "description": "Aparece 1.281 veces entre nuestras palabras bonitas.",
+      "description": "Aparece 2.833 veces entre nuestras palabras bonitas.",
       "size": "small"
     },
     {
       "label": "Hater de tiempo completo",
       "value": "odio",
-      "description": "Utilizaste la palabra odio 135 veces",
+      "description": "Utilizaste la palabra odio 173 veces",
       "size": "small"
     },
     {
       "label": "Quien inició mas veces la conversacion",
       "value": "David",
-      "description": "190 dias iniciando la conversacion.",
+      "description": "226 dias iniciando la conversacion.",
       "size": "small"
     }
   ],
   "hater_full_time": {
     "title": "Hater de tiempo completo",
     "keyword": "odio",
-    "count": "135",
-    "description": "Utilizaste la palabra odio 135 veces"
+    "count": "173",
+    "description": "Utilizaste la palabra odio 173 veces"
   },
   "phrase_counts": [
     {
       "key": "te_amo",
       "label": "te amo",
-      "count": 667
+      "count": 1437
     },
     {
       "key": "te_adoro",
@@ -93,47 +93,47 @@
     {
       "key": "te_extrano",
       "label": "te extraño",
-      "count": 35
+      "count": 131
     },
     {
       "key": "mi_amor",
       "label": "mi amor",
-      "count": 231
+      "count": 636
     },
     {
       "key": "amor_mio",
       "label": "amor mío",
-      "count": 10
+      "count": 22
     },
     {
       "key": "mi_vida",
       "label": "mi vida",
-      "count": 721
+      "count": 1161
     },
     {
       "key": "amor",
       "label": "amor",
-      "count": 1278
+      "count": 2830
     },
     {
       "key": "preciosa",
       "label": "preciosa",
-      "count": 42
+      "count": 61
     },
     {
       "key": "hermosa",
       "label": "hermosa",
-      "count": 89
+      "count": 170
     },
     {
       "key": "linda",
       "label": "linda",
-      "count": 98
+      "count": 142
     },
     {
       "key": "divina",
       "label": "divina",
-      "count": 8
+      "count": 11
     },
     {
       "key": "me_haces_feliz",
@@ -143,12 +143,12 @@
     {
       "key": "odio",
       "label": "odio",
-      "count": 148
+      "count": 203
     },
     {
       "key": "hate",
       "label": "hate",
-      "count": 19
+      "count": 31
     }
   ],
   "timeline": [
@@ -174,55 +174,55 @@
     },
     {
       "title": "El día que más hablamos",
-      "date": "08/06/2026",
-      "detail": "483 mensajes en ese dia."
+      "date": "12/07/2026",
+      "detail": "816 mensajes en ese dia."
     },
     {
       "title": "Nuestro mes más intenso",
-      "date": "06/2026",
-      "detail": "4.957 mensajes en ese mes."
+      "date": "07/2026",
+      "detail": "10.251 mensajes en ese mes."
     }
   ],
   "words": [
     {
       "word": "amor",
-      "count": "1.281"
+      "count": "2.833"
     },
     {
       "word": "feliz",
-      "count": "206"
-    },
-    {
-      "word": "linda",
-      "count": "103"
-    },
-    {
-      "word": "bonita",
-      "count": "98"
+      "count": "339"
     },
     {
       "word": "hermosa",
-      "count": "90"
+      "count": "171"
+    },
+    {
+      "word": "linda",
+      "count": "148"
+    },
+    {
+      "word": "bonita",
+      "count": "129"
     },
     {
       "word": "besitos",
-      "count": "57"
+      "count": "104"
     },
     {
       "word": "tranquila",
-      "count": "54"
+      "count": "84"
     },
     {
       "word": "preciosa",
-      "count": "42"
+      "count": "61"
     },
     {
       "word": "divina",
-      "count": "8"
+      "count": "11"
     },
     {
       "word": "abrazos",
-      "count": "1"
+      "count": "7"
     }
   ],
   "special_message": {
@@ -399,129 +399,129 @@
     "hours": [
       {
         "label": "00:00",
-        "value": 584
+        "value": 987
       },
       {
         "label": "01:00",
-        "value": 298
+        "value": 482
       },
       {
         "label": "02:00",
-        "value": 182
+        "value": 197
       },
       {
         "label": "03:00",
-        "value": 68
+        "value": 201
       },
       {
         "label": "04:00",
-        "value": 55
+        "value": 392
       },
       {
         "label": "05:00",
-        "value": 7
+        "value": 100
       },
       {
         "label": "06:00",
-        "value": 37
+        "value": 39
       },
       {
         "label": "07:00",
-        "value": 288
+        "value": 349
       },
       {
         "label": "08:00",
-        "value": 736
+        "value": 910
       },
       {
         "label": "09:00",
-        "value": 634
+        "value": 776
       },
       {
         "label": "10:00",
-        "value": 692
+        "value": 1203
       },
       {
         "label": "11:00",
-        "value": 595
+        "value": 1194
       },
       {
         "label": "12:00",
-        "value": 894
+        "value": 1568
       },
       {
         "label": "13:00",
-        "value": 1672
+        "value": 2376
       },
       {
         "label": "14:00",
-        "value": 1520
+        "value": 2424
       },
       {
         "label": "15:00",
-        "value": 589
+        "value": 1043
       },
       {
         "label": "16:00",
-        "value": 670
+        "value": 1084
       },
       {
         "label": "17:00",
-        "value": 469
+        "value": 896
       },
       {
         "label": "18:00",
-        "value": 975
+        "value": 1838
       },
       {
         "label": "19:00",
-        "value": 816
+        "value": 1510
       },
       {
         "label": "20:00",
-        "value": 906
+        "value": 1715
       },
       {
         "label": "21:00",
-        "value": 1338
+        "value": 2730
       },
       {
         "label": "22:00",
-        "value": 3135
+        "value": 4885
       },
       {
         "label": "23:00",
-        "value": 2475
+        "value": 4339
       }
     ],
     "weekdays": [
       {
         "label": "Lunes",
-        "value": 3203
+        "value": 5470
       },
       {
         "label": "Martes",
-        "value": 3715
+        "value": 6072
       },
       {
         "label": "Miercoles",
-        "value": 3389
+        "value": 5565
       },
       {
         "label": "Jueves",
-        "value": 3218
+        "value": 4953
       },
       {
         "label": "Viernes",
-        "value": 2369
+        "value": 3869
       },
       {
         "label": "Sabado",
-        "value": 1533
+        "value": 2710
       },
       {
         "label": "Domingo",
-        "value": 2208
+        "value": 4599
       }
     ],
     "months": [
@@ -558,17 +558,27 @@
       {
         "label": "04/2026",
         "date": "2026-04-01T00:00:00-05:00",
-        "value": 3352
+        "value": 3357
       },
       {
         "label": "05/2026",
         "date": "2026-05-01T00:00:00-05:00",
-        "value": 4165
+        "value": 4166
       },
       {
         "label": "06/2026",
         "date": "2026-06-01T00:00:00-05:00",
-        "value": 4957
+        "value": 6979
+      },
+      {
+        "label": "07/2026",
+        "date": "2026-07-01T00:00:00-05:00",
+        "value": 10251
+      },
+      {
+        "label": "08/2026",
+        "date": "2026-08-01T00:00:00-05:00",
+        "value": 1324
       }
     ],
     "senders": [
@@ -578,12 +588,12 @@
       },
       {
         "label": "David",
-        "value": 8249
+        "value": 8260
       }
     ]
   },
   "conversation_starter": {
     "sender": "David",
-    "detail": "190 dias iniciando la conversacion."
+    "detail": "226 dias iniciando la conversacion."
   }
 }

@@ -39,6 +39,29 @@ def test_fetch_messages_by_ids_ignores_none_and_empty_lists(monkeypatch) -> None
     assert calls == []
 
 
+def test_fetch_messages_by_keys_preserves_input_order(monkeypatch) -> None:
+    rows = [
+        {"id": 3, "message_key": "key-3", "sender": "Mar"},
+        {"id": 1, "message_key": "key-1", "sender": "David"},
+    ]
+    calls: list[dict[str, list[str]]] = []
+
+    def fake_fetch_all_dicts(_query, _function_name, parameters):
+        calls.append(parameters)
+        return rows
+
+    monkeypatch.setattr(
+        romantic_queries,
+        "_fetch_all_dicts",
+        fake_fetch_all_dicts,
+    )
+
+    result = romantic_queries.fetch_messages_by_keys(["key-1", "missing", "key-3"])
+
+    assert calls == [{"message_keys": ["key-1", "missing", "key-3"]}]
+    assert [row["id"] for row in result] == [1, 3]
+
+
 def test_fetch_sender_rhythm_passes_cutoff_parameter(monkeypatch) -> None:
     calls: list[dict[str, str | None]] = []
 

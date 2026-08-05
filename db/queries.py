@@ -86,6 +86,7 @@ FETCH_MESSAGES_QUERY: TextClause = text(
         message,
         message_normalized,
         timestamp,
+        message_key,
         created_at
     FROM messages
     WHERE (:source IS NULL OR source = :source)
@@ -118,17 +119,24 @@ INSERT_MESSAGE_QUERY: TextClause = text(
         message,
         message_normalized,
         timestamp,
-        source
+        source,
+        message_key
     )
     VALUES (
         :sender,
         :message,
         :message_normalized,
         :timestamp,
-        :source
+        :source,
+        :message_key
     )
     ON CONFLICT (source, sender, message, timestamp)
-    DO NOTHING
+    DO UPDATE SET
+        message_normalized = EXCLUDED.message_normalized,
+        message_key = COALESCE(messages.message_key, EXCLUDED.message_key)
+    WHERE messages.message_key IS NULL
+       OR messages.message_normalized IS DISTINCT FROM EXCLUDED.message_normalized
+    RETURNING (xmax = 0) AS inserted
     """
 )
 
@@ -170,7 +178,7 @@ ROMANTIC_FIRST_MESSAGE_QUERY: TextClause = text(
 
 ROMANTIC_MESSAGE_BY_ID_QUERY: TextClause = text(
     f"""
-    SELECT id, sender, message, timestamp
+    SELECT id, sender, message, timestamp, source, message_key
     FROM messages
     WHERE {VALID_MESSAGE_FILTER}
       AND id = :message_id
@@ -178,14 +186,33 @@ ROMANTIC_MESSAGE_BY_ID_QUERY: TextClause = text(
     """
 )
 
+ROMANTIC_MESSAGE_BY_KEY_QUERY: TextClause = text(
+    f"""
+    SELECT id, sender, message, timestamp, source, message_key
+    FROM messages
+    WHERE {VALID_MESSAGE_FILTER}
+      AND message_key = :message_key
+    LIMIT 1
+    """
+)
+
 ROMANTIC_MESSAGES_BY_IDS_QUERY: TextClause = text(
     f"""
-    SELECT id, sender, message, timestamp, source
+    SELECT id, sender, message, timestamp, source, message_key
     FROM messages
     WHERE {VALID_MESSAGE_FILTER}
       AND id IN :message_ids
     """
 ).bindparams(bindparam("message_ids", expanding=True))
+
+ROMANTIC_MESSAGES_BY_KEYS_QUERY: TextClause = text(
+    f"""
+    SELECT id, sender, message, timestamp, source, message_key
+    FROM messages
+    WHERE {VALID_MESSAGE_FILTER}
+      AND message_key IN :message_keys
+    """
+).bindparams(bindparam("message_keys", expanding=True))
 
 ROMANTIC_PATTERN_COUNT_QUERY: TextClause = text(
     f"""

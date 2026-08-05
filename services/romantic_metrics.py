@@ -22,7 +22,9 @@ from db.romantic_queries import (
     fetch_hourly_rhythm,
     fetch_monthly_rhythm,
     fetch_message_by_id,
+    fetch_message_by_key,
     fetch_messages_by_ids,
+    fetch_messages_by_keys,
     fetch_pattern_messages,
     fetch_peak_day,
     fetch_peak_month,
@@ -31,6 +33,7 @@ from db.romantic_queries import (
     fetch_sender_rhythm,
     fetch_weekday_rhythm,
 )
+from app.content_references import MessageReference
 from app.chart_config import CHARTS_MAX_DATE
 from logger.logger import log_critical_error
 
@@ -373,9 +376,13 @@ def _build_romantic_words() -> list[dict[str, str]]:
 
 def _build_featured_messages() -> list[dict[str, str]]:
     raw_manual_ids = ROMANTIC_CONTENT["featured_quotes"].get("message_ids", [])
-    if isinstance(raw_manual_ids, list) and raw_manual_ids:
-        manual_ids = _valid_message_ids(raw_manual_ids)
-        return _build_manual_featured_messages(manual_ids)
+    raw_manual_keys = ROMANTIC_CONTENT["featured_quotes"].get("message_keys", [])
+    if _has_configured_manual_messages(raw_manual_ids, raw_manual_keys):
+        references = _message_references_from_lists(
+            raw_manual_ids,
+            raw_manual_keys,
+        )
+        return _build_manual_featured_messages(references)
 
     fallback_limit = _get_featured_quote_fallback_limit()
     reserved_message_ids = get_reserved_message_ids()
@@ -418,8 +425,20 @@ def _build_featured_messages() -> list[dict[str, str]]:
     return featured_messages
 
 
-def _build_manual_featured_messages(message_ids: list[int]) -> list[dict[str, str]]:
-    return [_format_message_card(row) for row in fetch_messages_by_ids(message_ids)]
+def _build_manual_featured_messages(
+    references: list[MessageReference] | list[int],
+) -> list[dict[str, str]]:
+    if references and isinstance(references[0], int):
+        references = [
+            MessageReference(config_path="", message_id=message_id)
+            for message_id in references
+            if isinstance(message_id, int) and not isinstance(message_id, bool)
+        ]
+
+    return [
+        _format_message_card(row)
+        for row in _fetch_messages_by_references(references)
+    ]
 
 
 def _build_special_message_card() -> dict[str, Any]:
@@ -468,10 +487,13 @@ def _build_special_message_blocks(config: dict[str, Any]) -> list[dict[str, Any]
 
 
 def _build_her_messages_block(block: dict[str, Any]) -> dict[str, Any] | None:
-    message_ids = _valid_message_ids(block.get("message_ids", []))
+    references = _message_references_from_lists(
+        block.get("message_ids", []),
+        block.get("message_keys", []),
+    )
     messages = [
         _format_special_message_row(row, role="her")
-        for row in fetch_messages_by_ids(message_ids)
+        for row in _fetch_messages_by_references(references)
     ]
     if not messages:
         return None
@@ -492,15 +514,37 @@ def _build_conversation_pair_block(block: dict[str, Any]) -> dict[str, Any] | No
     message_ids = _valid_message_ids(
         [message.get("message_id") for message in configured_messages]
     )
+    message_keys = _valid_message_keys(
+        [message.get("message_key") for message in configured_messages]
+    )
     rows_by_id = {
         row["id"]: row
         for row in fetch_messages_by_ids(message_ids)
         if isinstance(row.get("id"), int)
     }
+    rows_by_key = {
+        row["message_key"]: row
+        for row in fetch_messages_by_keys(message_keys)
+        if isinstance(row.get("message_key"), str)
+    }
     messages: list[dict[str, str]] = []
 
     for configured_message in configured_messages:
         message_id = configured_message.get("message_id")
+        message_key = _valid_message_key(configured_message.get("message_key"))
+        if message_key is not None:
+            row = rows_by_key.get(message_key)
+            if row:
+                messages.append(
+                    _format_special_message_row(
+                        row,
+                        role=_normalize_conversation_role(
+                            configured_message.get("role")
+                        ),
+                    )
+                )
+                continue
+
         if not isinstance(message_id, int) or isinstance(message_id, bool):
             continue
 
@@ -530,6 +574,12 @@ def _fetch_configured_message(
     fallback_pattern: str | None = None,
 ) -> dict[str, Any] | None:
     config = ROMANTIC_CONTENT.get(key, {})
+    message_key = _valid_message_key(config.get("message_key"))
+    if message_key is not None:
+        message = fetch_message_by_key(message_key)
+        if message is not None:
+            return message
+
     message_id = config.get("message_id")
     if message_id is not None:
         message = fetch_message_by_id(message_id)
@@ -557,6 +607,12 @@ def _fetch_special_message(
 
 
 def _fetch_manual_timeline_message(item: dict[str, Any]) -> dict[str, Any] | None:
+    message_key = _valid_message_key(item.get("message_key"))
+    if message_key is not None:
+        message = fetch_message_by_key(message_key)
+        if message is not None:
+            return message
+
     message_id = item.get("message_id")
     if not isinstance(message_id, int) or isinstance(message_id, bool):
         return None
@@ -617,6 +673,114 @@ def _valid_message_ids(raw_ids: Any) -> list[int]:
         message_ids.append(raw_id)
 
     return message_ids
+
+
+def _valid_message_keys(raw_keys: Any) -> list[str]:
+    if not isinstance(raw_keys, list):
+        return []
+
+    message_keys: list[str] = []
+    seen_keys: set[str] = set()
+    for raw_key in raw_keys:
+        message_key = _valid_message_key(raw_key)
+        if message_key is None or message_key in seen_keys:
+            continue
+
+        seen_keys.add(message_key)
+        message_keys.append(message_key)
+
+    return message_keys
+
+
+def _valid_message_key(raw_key: Any) -> str | None:
+    if raw_key is None or isinstance(raw_key, bool):
+        return None
+
+    message_key = str(raw_key).strip()
+    if not message_key:
+        return None
+
+    return message_key
+
+
+def _has_configured_manual_messages(raw_ids: Any, raw_keys: Any) -> bool:
+    return (
+        isinstance(raw_ids, list)
+        and bool(raw_ids)
+        or isinstance(raw_keys, list)
+        and bool(raw_keys)
+    )
+
+
+def _message_references_from_lists(
+    raw_ids: Any,
+    raw_keys: Any,
+) -> list[MessageReference]:
+    ids = raw_ids if isinstance(raw_ids, list) else []
+    keys = raw_keys if isinstance(raw_keys, list) else []
+    references: list[MessageReference] = []
+
+    for index in range(max(len(ids), len(keys))):
+        raw_id = ids[index] if index < len(ids) else None
+        raw_key = keys[index] if index < len(keys) else None
+        message_id = (
+            raw_id
+            if isinstance(raw_id, int) and not isinstance(raw_id, bool)
+            else None
+        )
+        message_key = _valid_message_key(raw_key)
+        if message_id is None and message_key is None:
+            continue
+
+        references.append(
+            MessageReference(
+                config_path="",
+                message_id=message_id,
+                message_key=message_key,
+            )
+        )
+
+    return references
+
+
+def _fetch_messages_by_references(
+    references: list[MessageReference],
+) -> list[dict[str, Any]]:
+    message_keys = [
+        reference.message_key
+        for reference in references
+        if reference.message_key is not None
+    ]
+    message_ids = [
+        reference.message_id
+        for reference in references
+        if reference.message_id is not None
+    ]
+    rows_by_key = {
+        row["message_key"]: row
+        for row in fetch_messages_by_keys(message_keys)
+        if isinstance(row.get("message_key"), str)
+    }
+    rows_by_id = {
+        row["id"]: row
+        for row in fetch_messages_by_ids(message_ids)
+        if isinstance(row.get("id"), int)
+    }
+    rows: list[dict[str, Any]] = []
+
+    for reference in references:
+        if reference.message_key is not None:
+            row = rows_by_key.get(reference.message_key)
+            if row:
+                rows.append(row)
+                continue
+
+        if reference.message_id is not None:
+            row = rows_by_id.get(reference.message_id)
+            if row:
+                rows.append(row)
+
+    return rows
 
 
 def _format_hourly_rhythm(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:

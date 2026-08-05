@@ -29,6 +29,8 @@ def test_load_messages_inserts_transformed_records(monkeypatch) -> None:
     query, parameters = engine.connection.executions[0]
     assert query is INSERT_MESSAGE_QUERY
     assert parameters["sender"] == "Alice"
+    assert isinstance(parameters["message_key"], str)
+    assert len(parameters["message_key"]) == 64
 
 
 def test_load_messages_counts_duplicate_skips(monkeypatch) -> None:
@@ -105,6 +107,15 @@ def test_load_messages_from_artifact_loads_records_then_database(
     artifacts.save_records(records, path)
 
     assert load.load_messages_from_artifact(path) == {"received": 1}
+
+
+def test_insert_message_query_includes_message_key() -> None:
+    query_text = str(INSERT_MESSAGE_QUERY)
+
+    assert "message_key" in query_text
+    assert ":message_key" in query_text
+    assert "DO UPDATE SET" in query_text
+    assert "RETURNING (xmax = 0) AS inserted" in query_text
 
 
 def _message_record(sender: str) -> dict:

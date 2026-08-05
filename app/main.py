@@ -36,6 +36,8 @@ from ui.components import (
     render_words,
 )
 from ui.error_boundary import log_app_exception, render_safe_error_message
+from ui.birthday_invitation import render_birthday_invitation
+from ui.spotify_capsule import render_spotify_8bit_player
 from ui.styles import CUSTOM_CSS
 
 
@@ -133,8 +135,30 @@ def run_app() -> None:
         copy="Palabras pequeñas que aparecen muchas veces porque tambien hacen parte de nosotros.",
     )
     render_words(landing_data["words"])
+    render_spotify_capsule_section()
+    render_birthday_invitation_section()
     render_closing()
     render_reveal_observer()
+
+
+def render_spotify_capsule_section() -> None:
+    """Render the optional Spotify-inspired easter egg section."""
+    spotify_config = ROMANTIC_CONTENT.get("spotify_capsule", {})
+    if not spotify_config.get("enabled", False):
+        return
+
+    render_section_header(
+        kicker="Mujer amante",
+        title="Una cancion que me hace pensar en ti",
+        copy="La letra de una cancion que te queda a la perfección.",
+    )
+    render_spotify_8bit_player(spotify_config)
+
+
+def render_birthday_invitation_section() -> None:
+    """Render the optional birthday invitation after the Spotify capsule."""
+    birthday_config = ROMANTIC_CONTENT.get("birthday_invitation", {})
+    render_birthday_invitation(birthday_config)
 
 
 def main() -> None:

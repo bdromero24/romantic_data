@@ -87,8 +87,12 @@ def test_quote_and_special_message_html_escape_dynamic_values() -> None:
         }
     )
 
-    assert '<section class="quote-grid">' in quotes_html
-    assert '<article class="quote-card scroll-quote-card reveal-on-scroll"' in quotes_html
+    assert '<section class="love-letter-grid">' in quotes_html
+    assert '<article class="love-letter-card reveal-on-scroll"' in quotes_html
+    assert 'role="button"' in quotes_html
+    assert 'tabindex="0"' in quotes_html
+    assert '<div class="love-letter-front"' in quotes_html
+    assert '<div class="love-letter-back">' in quotes_html
     assert "<script>" not in quotes_html
     assert "&lt;script&gt;" in quotes_html
     assert "Mar &amp; David" in quotes_html
@@ -136,7 +140,7 @@ def test_quote_cards_use_parchment_asset_background(tmp_path, monkeypatch) -> No
         ]
     )
 
-    assert "scroll-quote-card" in quotes_html
+    assert "love-letter-card" in quotes_html
     assert "--scroll-bg-image: url('data:image/png;base64,ZmFrZS1wYXJjaG1lbnQ=')" in quotes_html
 
 
@@ -295,3 +299,21 @@ def test_reveal_observer_uses_hidden_streamlit_component(monkeypatch) -> None:
     assert height == 0
     assert "IntersectionObserver" in rendered_html
     assert ".reveal-on-scroll" in rendered_html
+
+
+def test_love_letter_unlocker_uses_hidden_streamlit_component(monkeypatch) -> None:
+    component_calls: list[tuple[str, int]] = []
+
+    monkeypatch.setattr(
+        components.streamlit_components,
+        "html",
+        lambda html, height=0: component_calls.append((html, height)),
+    )
+
+    components.render_love_letter_unlocker()
+
+    rendered_html, height = component_calls[0]
+    assert height == 0
+    assert ".love-letter-card" in rendered_html
+    assert "keydown" in rendered_html
+    assert "is-open" in rendered_html

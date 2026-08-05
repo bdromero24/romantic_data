@@ -76,6 +76,8 @@ def test_run_app_skips_featured_quotes_section_when_empty(monkeypatch) -> None:
     )
     monkeypatch.setattr(app_main, "render_timeline", lambda _timeline: None)
     monkeypatch.setattr(app_main, "render_words", lambda _words: None)
+    monkeypatch.setattr(app_main, "render_spotify_8bit_player", lambda _config: None)
+    monkeypatch.setattr(app_main, "render_birthday_invitation", lambda _config: None)
     monkeypatch.setattr(app_main, "render_closing", lambda: None)
     monkeypatch.setattr(app_main, "render_reveal_observer", lambda: None)
     monkeypatch.setattr(
@@ -93,6 +95,79 @@ def test_run_app_skips_featured_quotes_section_when_empty(monkeypatch) -> None:
 
     assert app_main.ROMANTIC_CONTENT["featured_quotes"]["title"] not in section_titles
     assert quote_calls == []
+
+
+def test_render_spotify_capsule_section_respects_enabled_flag(monkeypatch) -> None:
+    section_calls: list[str] = []
+    player_calls: list[dict[str, str]] = []
+
+    monkeypatch.setattr(
+        app_main,
+        "ROMANTIC_CONTENT",
+        {"spotify_capsule": {"enabled": False, "title": "Mujer Amante"}},
+    )
+    monkeypatch.setattr(
+        app_main,
+        "render_section_header",
+        lambda kicker, title, copy: section_calls.append(title),
+    )
+    monkeypatch.setattr(
+        app_main,
+        "render_spotify_8bit_player",
+        lambda config: player_calls.append(config),
+    )
+
+    app_main.render_spotify_capsule_section()
+
+    assert section_calls == []
+    assert player_calls == []
+
+
+def test_render_spotify_capsule_section_renders_enabled_config(monkeypatch) -> None:
+    section_calls: list[str] = []
+    player_calls: list[dict[str, str]] = []
+    spotify_config = {"enabled": True, "title": "Mujer Amante"}
+
+    monkeypatch.setattr(
+        app_main,
+        "ROMANTIC_CONTENT",
+        {"spotify_capsule": spotify_config},
+    )
+    monkeypatch.setattr(
+        app_main,
+        "render_section_header",
+        lambda kicker, title, copy: section_calls.append(title),
+    )
+    monkeypatch.setattr(
+        app_main,
+        "render_spotify_8bit_player",
+        lambda config: player_calls.append(config),
+    )
+
+    app_main.render_spotify_capsule_section()
+
+    assert section_calls == ["Una cancion que me hace pensar en ti"]
+    assert player_calls == [spotify_config]
+
+
+def test_render_birthday_invitation_section_passes_config(monkeypatch) -> None:
+    birthday_config = {"enabled": True, "closed_title": "Nueva carta"}
+    invitation_calls: list[dict[str, str | bool]] = []
+
+    monkeypatch.setattr(
+        app_main,
+        "ROMANTIC_CONTENT",
+        {"birthday_invitation": birthday_config},
+    )
+    monkeypatch.setattr(
+        app_main,
+        "render_birthday_invitation",
+        lambda config: invitation_calls.append(config),
+    )
+
+    app_main.render_birthday_invitation_section()
+
+    assert invitation_calls == [birthday_config]
 
 
 def test_parse_bool_config_accepts_expected_values() -> None:
